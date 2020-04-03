@@ -1,0 +1,10 @@
+#!/bin/bash
+rm $1
+touch $1
+chmod u+x $1
+echo '#!/bin/bash' >> $1
+echo 'cd ..' >> $1
+echo 'cp INFOS/'$1'.txt ./infos.txt' >> $1
+echo 'python3 generate_infos.py' >> $1
+echo './page' $1'.png' $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16} $1'_page.png' >> $1
+#echo 'rm durée.png palette.png titre.png réalisateur.png infos.txt année.png' >> $1

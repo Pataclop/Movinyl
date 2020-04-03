@@ -1,0 +1,8 @@
+#!/bin/bash
+cd PROCESSING_ZONE
+for file in *
+do
+mkdir "${file%.*}"
+mkdir "${file%.*}"/images
+ffmpeg -i "${file}" -qscale:v 2 -r 0.4 "${file%.*}"/images/%d.jpg &
+done

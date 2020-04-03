@@ -1,0 +1,10 @@
+#!/bin/bashP
+cd PROCESSING_ZONE
+for file in *
+do
+cp ../disk  "${file}"/
+cd "${file}"/
+num=$(ls -l images | egrep -c '^-')
+./disk "${num}" &
+cd ..
+done
