@@ -1,8 +1,8 @@
-# Movie-Circle
+# Movinyl
 
 The goal of this project is to make a picture capturing the color spirit of a movie. 
 
-![Result example](https://github.com/Pataclop/Movie-Circle/blob/master/example_img/3.jpg)
+![Result example](https://github.com/Pataclop/Movinyl/blob/master/example_img/3.jpg)
 
 
 ## The simple way 
