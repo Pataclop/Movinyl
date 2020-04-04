@@ -77,8 +77,8 @@ void GenerateDisk(int FrameNumber){
 		resize(img, tmp, Size((2*FrameNumber)-2*i, (2*FrameNumber)-2*i),INTER_NEAREST);
 		//Then a circle is extracted from the image
 		tmp=ExtractCircle(tmp);
-		//if(i%10==0)
-			//printf("%d\n",i);
+		if(i%10==0)
+			printf("%d\n",i);
 		// And finaly the circle is inserted in the disk.
 		out = Insert(tmp, out, i);
 	}
