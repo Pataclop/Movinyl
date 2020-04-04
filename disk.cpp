@@ -16,6 +16,8 @@ cv::Mat ExtractCircle (Mat ims){
 	int rows = ims.rows;
 	int cols = ims.cols;
 	
+	float out_ring = rows/2-SAFE_DIST ;
+	float in_ring =  (rows/2)-(SAFE_DIST+1.0001);
 	int diff = (cols-rows)/2; 
 	Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
 	
@@ -24,7 +26,7 @@ cv::Mat ExtractCircle (Mat ims){
 			//here we crop a circle, 2 pixels thick, centered in the image.
 			//2 pixels intead of 1 to avoid aliassing issues.
 			float dist = sqrt(pow((cols/2)-x,2)+pow((rows/2)-y,2));
-			if (dist < rows/2-SAFE_DIST && dist > (rows/2)-(SAFE_DIST+2)){
+			if (dist < out_ring && dist > in_ring){
 				Vec3b colorS = ims.at<Vec3b>(y, x);
 				Vec4b colorD;
 				colorD.val[0] = colorS.val[0];//blue
@@ -75,8 +77,8 @@ void GenerateDisk(int FrameNumber){
 		resize(img, tmp, Size((2*FrameNumber)-2*i, (2*FrameNumber)-2*i),INTER_NEAREST);
 		//Then a circle is extracted from the image
 		tmp=ExtractCircle(tmp);
-		if(i%10==0)
-			printf("%d\n",i);
+		//if(i%10==0)
+			//printf("%d\n",i);
 		// And finaly the circle is inserted in the disk.
 		out = Insert(tmp, out, i);
 	}
