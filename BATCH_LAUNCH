@@ -1,4 +1,4 @@
-#!/bin/bashP
+#!/bin/bash
 cd PROCESSING_ZONE
 for file in *
 do
