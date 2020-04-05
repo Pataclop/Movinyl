@@ -1,5 +1,4 @@
-from PIL.Image import *
-from math import *
+import PIL.Image
 from random import randint
 from PIL import ImageFont
 from PIL import ImageDraw 
@@ -8,19 +7,20 @@ import os
 import subprocess
 
 
-def ecris (nom, police, taille):
+def ecris (nom, police, taille, largeur):
 
-	para = textwrap.wrap(nom, width=50)
+	para = textwrap.wrap(nom, width=largeur)
 
-	MAX_W, MAX_H = 220, 120
-	im = new('RGBA', (MAX_W, MAX_H), (0, 50, 0, 0))
+	MAX_W, MAX_H = largeur, largeur//10
+	im = PIL.Image.new('RGBA', (MAX_W, MAX_H), (0, 0, 0, 0))
 	draw = ImageDraw.Draw(im)
+
 	font = ImageFont.truetype(police, taille)
 
 	current_h, pad = 50, 10
 	for line in para:
 	    w, h = draw.textsize(line, font=font)
-	    draw.text(((MAX_W - w) / 2, current_h), line, font=font)
+	    draw.text(((MAX_W - w) / 2, current_h), line, fill=(255,255,255,255), font=font)
 	    current_h += h + pad
 
 	return im
@@ -58,35 +58,39 @@ def rotate (im, angle):
 	return  im.rotate(angle, expand=True)
 
 def faitou (im_number):
+	f = open('info.txt', "r")
+	lines = f.readlines()
+	f.close()
 	count=0
 	l=5
-	h=8
+	h=2
 	for planche in range (im_number//(l*h)+1):
 		planche_name = "planche" + str(planche) + ".png"
-		L=5000
-		H=8000
-		out= new('RGBA', (L,H), (0,0,0,255)) 
+		L=10000
+		H=4000
+		out= PIL.Image.new('RGBA', (L,H), (0,0,0,255)) 
 		positions=[0]*(2*l*h)
 		cmp = 0
+		resized_disk_size=int((8.5*L)/(l*10))
 		for y in range (h) :
 			for x in range (l):
-				positions[cmp]=int(x*L/l)+50
-				positions[cmp+1]=int(y*H/h)+50
+				positions[cmp]=int(x*L/l) + int((1.5*L)/(l*10))//2
+				positions[cmp+1]=int(y*H/h) + int((1.5*L)/(l*10))//2
 				cmp=cmp+2
 		for x in range (l*h) :
 			if count<im_number:
-				angle = 0
-				name = str((x+1+(planche*l*h))) + ".png"
-				raw = open(name)
+				name = str((x+1+(planche*l*h))) + ".png"		#name of the current disk being processed
+				raw = PIL.Image.open(name)
 				im = raw.convert("RGBA")          
-				im_resize=im.resize((int((9*L)/(l*10)),int((9*L)/(l*10))), LANCZOS)
-				out.paste(im_resize, (positions[2*x],positions[2*x+1]), im_resize)
-				page_num=ecris(str(count+(im_number//(l*h)+1)), 'futura medium bt.ttf', 50)
-				out.paste(page_num, (positions[2*x]-50,positions[2*x+1]-50), page_num)
+				im_resize=im.resize((resized_disk_size,resized_disk_size), PIL.Image.LANCZOS) #we have l*h slots, we want the disk to be 90% of the size of the slot.
+				out.paste(im_resize, (positions[2*x],positions[2*x+1]), im_resize) #paste the disc at the right place
+				page_num=ecris(lines[count], 'futura medium bt.ttf', 50, int(L/l)) 
+
+				out.paste(page_num, (positions[2*x]-int((1.5*L)/(l*10))//2,positions[2*x+1]+int((8.4*L)/(l*10))), page_num)
 				print (x)
 				count=count+1
 		out.save(planche_name)
 
-faitou (118)
+faitou (10)
 
 
