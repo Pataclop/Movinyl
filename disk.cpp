@@ -4,23 +4,23 @@
 #include <string>
 using namespace cv;
 
-//some movies have a black borderof a few pixels. 
+//some movies have a black borderof a few pixels.
 //To avoid it screwing the disk image, the croped circle will be in a center square of size Height-2*SAFE_DIST
 //try to keep it over 15.
-#define SAFE_DIST 40 
-
+#define SAFE_DIST 40
+#define WIDTH 2
 
 cv::Mat ExtractCircle ();
 
 cv::Mat ExtractCircle (Mat ims){
 	int rows = ims.rows;
 	int cols = ims.cols;
-	
+
 	float out_ring = rows/2-SAFE_DIST ;
-	float in_ring =  (rows/2)-(SAFE_DIST+2);
-	int diff = (cols-rows)/2; 
+	float in_ring =  (rows/2)-(SAFE_DIST+WIDTH);
+	int diff = (cols-rows)/2;
 	Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
-	
+
 	for (int x = 0; x<cols; x++){
 		for (int y = 0; y<rows; y++){
 			//here we crop a circle, 2 pixels thick, centered in the image.
@@ -63,7 +63,7 @@ cv::Mat Insert(Mat ims1, Mat ims2, int margin){
 //Here, we process all the images and save the disk image result.
 void GenerateDisk(int FrameNumber){
 	Mat tmp;
-	//the output image will have a disk, made of FrameNumber circles, each 1 pixel wide. 
+	//the output image will have a disk, made of FrameNumber circles, each 1 pixel wide.
 	Mat out = Mat(FrameNumber*2, FrameNumber*2, CV_8UC4, Scalar(0,0,0,255));
 	printf("START\n");
 	for (int i=0; i<FrameNumber; i++){
@@ -71,7 +71,7 @@ void GenerateDisk(int FrameNumber){
 		name += std::to_string(i+1);
 		name += ".jpg";
 		Mat img = imread(name);
-		//First we resize the picture to the wanted size. 
+		//First we resize the picture to the wanted size.
 		//This size is dependant of the frame position in the disk.
 		//The more the image is late in the film, the smaller it will be.
 		resize(img, tmp, Size((2*FrameNumber)-2*i, (2*FrameNumber)-2*i),INTER_NEAREST);
