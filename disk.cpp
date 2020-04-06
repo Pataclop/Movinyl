@@ -17,7 +17,7 @@ cv::Mat ExtractCircle (Mat ims){
 	int cols = ims.cols;
 	
 	float out_ring = rows/2-SAFE_DIST ;
-	float in_ring =  (rows/2)-(SAFE_DIST+1.0001);
+	float in_ring =  (rows/2)-(SAFE_DIST+2);
 	int diff = (cols-rows)/2; 
 	Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
 	
