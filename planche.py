@@ -5,6 +5,7 @@ from PIL import ImageDraw
 import textwrap
 import os
 import subprocess
+import sys
 
 
 def ecris (nom, police, taille, largeur):
@@ -58,7 +59,7 @@ def rotate (im, angle):
 	return  im.rotate(angle, expand=True)
 
 def faitou (im_number):
-	f = open('info.txt', "r")
+	f = open(sys.argv[2], "r")
 	lines = f.readlines()
 	f.close()
 	count=0
@@ -91,6 +92,6 @@ def faitou (im_number):
 				count=count+1
 		out.save(planche_name)
 
-faitou (10)
+faitou (sys.argv[1])
 
 
