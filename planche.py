@@ -58,7 +58,9 @@ def border(im, border_size):
 def rotate (im, angle):
 	return  im.rotate(angle, expand=True)
 
+
 def faitou (im_number):
+	print("usage : python3 planche NumberOfDisks info.txt")
 	f = open(sys.argv[2], "r")
 	lines = f.readlines()
 	f.close()
