@@ -64,11 +64,11 @@ def faitou (im_number):
 	f.close()
 	count=0
 	l=5
-	h=2
+	h=5
 	for planche in range (im_number//(l*h)+1):
 		planche_name = "planche" + str(planche) + ".png"
 		L=10000
-		H=4000
+		H=10000
 		out= PIL.Image.new('RGBA', (L,H), (0,0,0,255)) 
 		positions=[0]*(2*l*h)
 		cmp = 0
@@ -92,6 +92,6 @@ def faitou (im_number):
 				count=count+1
 		out.save(planche_name)
 
-faitou (sys.argv[1])
+faitou (int(sys.argv[1]))
 
 
