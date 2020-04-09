@@ -5,13 +5,16 @@ The goal of this project is to make a picture capturing the color spirit of a mo
 ![Result example](https://github.com/Pataclop/Movinyl/blob/master/example_img/3.jpg)
 
 
-## The simple way 
+## The easy way 
 
-- put all your movie files in **PROCESSING_ZONE**
-- run ``` ./IMAGE_GENERATOR``` to extract the images
-- then run  ```BATCH LAUNCH``` to create the disks
+- Run setup : ```./0_Setup```
+- Place your video files in PROCESSING_ZONE
+- Run ```./1_IMAGE_GENERATOR``` and wait for the process to end. The more core, the better
+- Run ```./2_VIDEO_REMOVER``` to delete all the video files (check they are deleted)
+- Run ```./3_BATCH_LAUNCH``` and wait for the process to end. Not multithreaded yet, but one core per video file
+- Run ```./4_RENAME_SAVE``` and you have all the disks.
 
-then if you want the page, refer to the **Making the page** section bellow.
+then if you want the page, refer to the **Making the page** section bellow (in developpement).
 
 
 ## The complete process 
