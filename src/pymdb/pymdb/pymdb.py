@@ -155,17 +155,17 @@ class Movie:
         except IOError:
             print("IOError: [ No such Image Exist ]")
 
-    def year(self):
+    def runtime(self):
         """
         :return: Runtime of Movie
         """
         return list(map(str, self.stuff["Runtime"].split(",")))
     
-    def runtime(self):
+    def year(self):
         """
-        :return: runtime of Movie
+        :return: Year of Movie
         """
-        return int(self.stuff["Runtime"])
+        return int(self.stuff["Year"])
 
     def ratings(self):
         """
