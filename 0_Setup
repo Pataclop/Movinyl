@@ -1,0 +1,16 @@
+#!/bin/bash
+cd src
+cd disk
+make
+mv disk ../../
+cd ..
+cd page
+make
+mv page ../../
+cd ..
+cd pymdb/
+sudo python setup.py install
+sudo python3 setup.py install
+cd ..
+cd ..
+mkdir PROCESSING_ZONE
