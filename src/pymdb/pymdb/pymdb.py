@@ -159,7 +159,7 @@ class Movie:
         """
         :return: Runtime of Movie
         """
-        return list(map(str, self.stuff["Runtime"].split(",")))
+        return list(map(str, self.stuff["Runtime"].split(" ")))
     
     def year(self):
         """
