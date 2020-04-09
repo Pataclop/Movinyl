@@ -163,9 +163,9 @@ class Movie:
     
     def runtime(self):
         """
-        :return: Year of Movie
+        :return: runtime of Movie
         """
-        return int(self.stuff["Year"])
+        return int(self.stuff["Runtime"])
 
     def ratings(self):
         """
