@@ -5,6 +5,7 @@ import textwrap
 import os
 import subprocess
 import pymdb
+import sys
 
 
 def ecris (nom, police, saveName, taille):
@@ -30,11 +31,18 @@ def ecris (nom, police, saveName, taille):
 
 
 
+raw=sys.argv[1]
+raw=raw.replace("_", " ") 
+word_list = raw.split()
+year=word_list[-1]
+length=len(raw)
+film=raw[:length-4]
 
-film="Terminator 2"
-year = "1991"
-m = pymdb.Movie(film,int(year))
-
+#film="A Bug's Life"
+#year=str(1998)
+print(film)
+m = pymdb.Movie(film,year)
+#print(m.info())
 anneePropre="("+year+")"
 duree = str(m.runtime()[0])
 real = m.director()[0]
@@ -45,3 +53,4 @@ ecris(real, 'futura medium bt.ttf', "réalisateur.png",170)
 ecris(duree, 'futura light bt.ttf', "durée.png",150)
 
 
+print ("DONE")

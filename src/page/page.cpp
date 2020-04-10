@@ -12,7 +12,8 @@ using namespace cv;
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
+#include <string.h>
+#include <time.h>
 
 /*
 			IT IS IMPORTANT TO KEEP A SAVING OF THE CIRCLE PICTURE SO YOU CAN CHANGE THE PAGE LAYOUT 
@@ -195,9 +196,12 @@ void palette (int **colors,  int ColorNumber, Mat img){
 //Here starts the page assembly. 
 //Here we just assemble multiple images. There is the disc, the name of the movie, year, realisator, and durration.
 //since opencv doesn't support third party fonts (as far as I know), all these pictures were created in python.
-void insert_in_frame(std::string name, int aa1, int aa2, int aa3,int aa4,int aa5,int aa6,int aa7,int aa8,int aa9,int aa10,int aa11,int aa12,int aa13,int aa14,int aa15, std::string outputName){
+void insert_in_frame(std::string name, int aa1, int aa2, int aa3,int aa4,int aa5,int aa6,int aa7,int aa8,int aa9,int aa10,int aa11,int aa12,int aa13,int aa14,int aa15){
 	Mat img;
-	Mat ims = imread(name);
+	std::string s = name;
+	s += ".png";
+	std::cout << "Now processing : " << s <<"\n";
+	Mat ims = imread(s);
 	
 	ims.convertTo(img, CV_8UC3);
 
@@ -252,8 +256,11 @@ void insert_in_frame(std::string name, int aa1, int aa2, int aa3,int aa4,int aa5
 	annee.copyTo(out(cv::Rect(0,(H/8)+400,W, 600)));
 	real.copyTo(out(cv::Rect(0, (H/2)+(rows/2)+(rows/20),W, 600)));
 	duree.copyTo(out(cv::Rect(0, (H/2)+(rows/2)+(rows/20)+400,W, 600)));
-
-	imwrite(outputName, out);
+ 
+  	std::string s_out = name;
+	s_out += "_page.png";
+	
+	imwrite(s_out, out);
 
 }
 
@@ -274,8 +281,6 @@ int main(int argc, char const *argv[])
 		atoi(argv[13]),
 		atoi(argv[14]),
 		atoi(argv[15]),
-		atoi(argv[16]),
-		argv[17]
-		);
+		atoi(argv[16]));
 	return 0;
 }

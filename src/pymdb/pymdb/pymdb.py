@@ -135,6 +135,7 @@ class Movie:
         print("Genre: ", self.stuff["Genre"])
         print("Director: ", self.stuff["Director"])
         print("Awards: ", self.stuff["Awards"])
+        print("Runtime: ", self.stuff["Runtime"])
 
 
     def getposter(self):
