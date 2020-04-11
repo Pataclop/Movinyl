@@ -25,7 +25,7 @@ The goal of this project is to make a picture capturing the color spirit of a mo
 
 Contact : project.movinyl@gmail.com
 
-##TODO 
+## TODO 
 - Multithreading for disks
 - Multithreading for pages
 - Simplify main color picking
