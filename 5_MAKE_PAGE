@@ -14,7 +14,6 @@ python3 generate_infos.py "American_History_X_1998"; ./page "American_History_X_
 python3 generate_infos.py "American_Ultra_2015"; ./page "American_Ultra_2015" 25 59 81 111 138 133 10 35 51 166 186 181 81 85 76
 python3 generate_infos.py "Apocalypse_Now_1979"; ./page "Apocalypse_Now_1979" 179 161 121 96 102 99 126 101 63 44 53 54 221 163 108
 python3 generate_infos.py "Apollo_13_1995"; ./page "Apollo_13_1995" 126 127 133 85 82 80 75 62 53 74 73 71 62 40 29 
-python3 generate_infos.py "Apollo_13_1995"; ./page "Apollo_13_1995" 179 188 195 127 109 100 105 91 82 32 26 22 84 85 84
 python3 generate_infos.py "Arrival_2016"; ./page "Arrival_2016" 99 107 103 21 36 38 58 73 76 81 72 59 203 208 209
 python3 generate_infos.py "Avatar_2009"; ./page "Avatar_2009" 74 72 115 18 42 76 57 93 57 43 68 86 132 146 146
 python3 generate_infos.py "Avengers_Infinity_War_2018"; ./page "Avengers_Infinity_War_2018" 107 78 62 57 61 73 106 98 91 85 83 84 186 187 186
@@ -41,7 +40,6 @@ python3 generate_infos.py "Crocodile_Dundee_in_Los_Angeles_2001"; ./page "Crocod
 python3 generate_infos.py "Dawn_of_the_Planet_of_the_Apes_2014"; ./page "Dawn_of_the_Planet_of_the_Apes_2014" 39 62 63 18 34 32 33 47 44 59 45 27 113 126 124
 python3 generate_infos.py "Deadpool_2_2018"; ./page "Deadpool_2_2018" 176 179 171 53 125 125 162 142 113 105 121 120 26 50 54
 python3 generate_infos.py "Deepwater_Horizon_2016"; ./page "Deepwater_Horizon_2016" 18 62 40 118 63 31 198 137 45 18 68 74 221 245 225
-python3 generate_infos.py "Deepwater_Horizon_2016"; ./page "Deepwater_Horizon_2016" 26 37 29 77 74 61 90 55 25 34 84 86 83 91 80 
 python3 generate_infos.py "Delicatessen_1991"; ./page "Delicatessen_1991" 104 84 44 78 49 21 183 151 95 147 96 42 116 62 23
 python3 generate_infos.py "Despicable_Me_2010"; ./page "Despicable_Me_2010" 129 159 175 99 73 64 142 118 98 87 126 159 74 42 37 
 python3 generate_infos.py "District_9_2009"; ./page "District_9_2009" 204 204 193 123 125 119 155 152 142 27 34 30 125 116 106 
@@ -104,13 +102,11 @@ python3 generate_infos.py "Rise_of_the_Planet_of_the_Apes_2011"; ./page "Rise_of
 python3 generate_infos.py "Salt_2010"; ./page "Salt_2010" 43 55 46 93 95 77 154 158 142 72 87 78 18 24 17
 python3 generate_infos.py "Scott_Pilgrim_vs_the_World_2010"; ./page "Scott_Pilgrim_vs_the_World_2010" 202 196 189 118 118 116 62 58 63 77 51 41 21 18 17
 python3 generate_infos.py "Shrek_2_2004"; ./page "Shrek_2_2004" 137 64 26 151 163 189 93 79 61 50 26 31 157 140 120
-python3 generate_infos.py "Shrek_2_2004"; ./page "Shrek_2_2004" 50 33 50 45 53 23 87 103 126 46 28 17 18 19 23 
 python3 generate_infos.py "Shrek_2001"; ./page "Shrek_2001" 121 145 187 128 150 97 99 60 52 134 124 109 123 42 38
 python3 generate_infos.py "Shrek_the_Third_2007"; ./page "Shrek_the_Third_2007" 128 130 181 44 34 28 102 58 41 164 130 110 177 158 194
 python3 generate_infos.py "Shutter_Island_2010"; ./page "Shutter_Island_2010" 75 89 54 86 98 75 69 87 85 106 104 89 39 47 43
 python3 generate_infos.py "Sicario_2015"; ./page "Sicario_2015" 169 170 157 137 126 88 30 43 45 92 84 59 89 93 83
 python3 generate_infos.py "Sin_City_A_Dame_to_Kill_For_2014"; ./page "Sin_City_A_Dame_to_Kill_For_2014" 74 74 74 114 114 114 56 55 55 38 38 38 21 21 21 
-python3 generate_infos.py "Spider_Man_2002"; ./page "Spider_Man_2002" 127 143 165 169 159 157 135 109 99 107 99 99 64 55 54
 python3 generate_infos.py "Spider-Man_2002"; ./page "Spider-Man_2002" 101 115 142 138 122 116 82 75 76 56 53 56 69 52 47 
 python3 generate_infos.py "Spirited_Away_2001"; ./page "Spirited_Away_2001" 110 127 73 117 84 70 99 52 38 143 146 119 99 52 38
 python3 generate_infos.py "Star_Trek_Into_Darkness_2013"; ./page "Star_Trek_Into_Darkness_2013" 142 32 13 80 162 166 98 46 64 7 90 119 148 174 180
@@ -142,7 +138,6 @@ python3 generate_infos.py "The_Hateful_Eight_2015"; ./page "The_Hateful_Eight_20
 python3 generate_infos.py "The_Hunger_Games_2012"; ./page "The_Hunger_Games_2012" 119 112 123 38 55 68 76 49 37 74 83 85 47 62 63 
 python3 generate_infos.py "The_Hunger_Games_Mockingjay_-_Part_1_2014"; ./page "The_Hunger_Games_Mockingjay_Part_1_2014" 102 128 127 56 40 16 36 44 40 68 80 77 70 65 51 
 python3 generate_infos.py "The_Hunger_Games_Mockingjay_-_Part_2_2015"; ./page "The_Hunger_Games_Mockingjay_Part_2_2015" 96 60 21 67 98 112 115 128 125 57 44 28 44 57 63 
-python3 generate_infos.py "The_Hunger_Games_Mockingjay_Part_1_2014"; ./page "The_Hunger_Games_Mockingjay_Part_1_2014" 148 173 173 113 105 85 64 59 42 88 104 101 45 51 47
 python3 generate_infos.py "The_Lord_of_the_Rings_The_Fellowship_of_the_Ring_2001"; ./page "The_Lord_of_the_Rings_The_Fellowship_of_the_Ring_2001" 41 86 72 77 130 128 106 89 61 73 74 46 17 40 44
 python3 generate_infos.py "The_Martian_2015"; ./page "The_Martian_2015" 139 92 57 92 96 102 95 69 49 178 174 189 174 96 50
 python3 generate_infos.py "The_Matrix_Revolutions_2003"; ./page "The_Matrix_Revolutions_2003" 56 93 52 40 59 84 41 82 169 83 137 101 70 77 58
