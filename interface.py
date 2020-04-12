@@ -20,9 +20,9 @@ color_text = ""  # R   G   B   R   G   B   R   G   B   R   G   B "
 imageNumber = 0
 imageList = os.listdir(TARGET)
 color_list = []
-
-
-
+selectColor="#ffffff"
+img=QImage("logos/movinyl_logo_square_bold.png")
+curent=0
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -111,6 +111,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
 
 
     def setLabelColor(self, color_list):
@@ -342,6 +343,7 @@ class Ui_Dialog(object):
         color_text = color_text + srgb + " "
         self.colors_label.setText(color_text)
     def click15(self, event):
+    
         verif="0123456789 "
         global color_text
         h=color_list[14].lstrip('#')
@@ -357,6 +359,24 @@ class Ui_Dialog(object):
         color_text = color_text + srgb + " "
         self.colors_label.setText(color_text)
 
+    def clickZoom(self, event):
+        print("ok")
+        verif="0123456789 "
+        global color_text
+        h=color_list[14].lstrip('#')
+        rgb=tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+        srgb=str(rgb)
+        for c in srgb :
+            a=True
+            for x in verif:
+                if c==x :
+                    a=False
+            if a :
+                srgb=srgb.replace(c,"");
+        color_text = color_text + srgb + " "
+        self.colors_label.setText(color_text)
+    
+        
     def clearFun(self, event):
         global color_text
         color_text = ""
@@ -366,56 +386,77 @@ class Ui_Dialog(object):
         global imageNumber
         global color_list 
         global color_text
+        global img
+        #self.next_label.setText("       LOADING...")
+
         imageNumber = imageNumber+1
         curent_image = TARGET+'/'+imageList[imageNumber]
         result = colorz(curent_image, 15)
         color_list = list(result)
         self.setLabelColor(color_list)
-        self.image_label.setPixmap(QtGui.QPixmap(curent_image))
+
+        img = QImage(curent_image)
+        pixmap = QPixmap(QPixmap.fromImage(img))
+        self.image_label.setPixmap(pixmap)
         color_text = ""
         self.colors_label.setText("")
+        #self.next_label.setText("           --->")
 
-    
+    def mousePressEvent(self, event):
+        tmp=0
+
+    def mouseMoveEvent(self,event):
+        factor = 4000/img.height()
+        x = event.pos().x()
+        y = event.pos().y()
+        c = img.pixel(x*factor,y*factor)  # color code (integer): 3235912
+        c_hex = QColor(c).name()  # 8bit RGBA: (255, 23, 0, 255)
+        #print( x, y, str(c_hex), img.height(), img.width())
+
+        self.zoom_color_label.setStyleSheet("background-color: "+str(c_hex))
 
     def retranslateUi(self, Dialog):
         global color_list 
+        global img
         curent_image = TARGET+'/'+imageList[imageNumber]
         result = colorz(curent_image, 15)
         color_list = list(result)
-
+        
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.l14.setText(_translate("Dialog", "14"))
-        self.l3.setText(_translate("Dialog", "3"))
-        self.l1.setText(_translate("Dialog", "1"))
-        self.l10.setText(_translate("Dialog", "10"))
-        self.l2.setText(_translate("Dialog", "2"))
-        self.l7.setText(_translate("Dialog", "7"))
-        self.l13.setText(_translate("Dialog", "12"))
-        self.l6.setText(_translate("Dialog", "13"))
-        self.l9.setText(_translate("Dialog", "9"))
-        self.l4.setText(_translate("Dialog", "4"))
-        self.l5.setText(_translate("Dialog", "5"))
-        self.l11.setText(_translate("Dialog", "11"))
-        self.l8.setText(_translate("Dialog", "18"))
-        self.l15.setText(_translate("Dialog", "15"))
-        self.l12.setText(_translate("Dialog", "12"))
-
+        self.l14.setText(_translate("Dialog", ""))   
+        self.l3.setText(_translate("Dialog", ""))
+        self.l1.setText(_translate("Dialog", ""))
+        self.l10.setText(_translate("Dialog", ""))
+        self.l2.setText(_translate("Dialog", ""))
+        self.l7.setText(_translate("Dialog", ""))
+        self.l13.setText(_translate("Dialog", ""))
+        self.l6.setText(_translate("Dialog", ""))
+        self.l9.setText(_translate("Dialog", ""))
+        self.l4.setText(_translate("Dialog", ""))
+        self.l5.setText(_translate("Dialog", ""))
+        self.l11.setText(_translate("Dialog", ""))
+        self.l8.setText(_translate("Dialog", ""))
+        self.l15.setText(_translate("Dialog", ""))
+        self.l12.setText(_translate("Dialog", ""))
         self.next_label.setText(_translate("Dialog", "           --->"))
         self.clearLabel.setText(_translate("Dialog", "X"))
         #self.prev_label.setText(_translate("Dialog", "<---"))
-
-        self.zoom_label.setText(_translate("Dialog", "TextLabel"))
-        self.zoom_color_label.setText(_translate("Dialog", "TextLabel"))
+        self.zoom_label.setText(_translate("Dialog", " "))
+        self.zoom_color_label.setText(_translate("Dialog", " "))
         self.colors_label.setText(_translate("Dialog", color_text))
         self.image_label.setObjectName("image_label")
         self.colors_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
-
+        
         #self.prev_label.setStyleSheet("background-color: #00B903")
-        self.next_label.setStyleSheet("background-color: #9f9f9f")
+        #self.next_label.setStyleSheet("background-color: #9f9f9f")
 
-        self.image_label.setPixmap(QtGui.QPixmap(curent_image))
+        #self.image_label.setPixmap(small_pixmap)
+        img = QImage(curent_image)
+        pixmap = QPixmap(QPixmap.fromImage(img))
+        self.image_label.setPixmap(pixmap)
+        self.next_label
         self.image_label.show() 
         self.image_label.setScaledContents(True)
         
@@ -438,8 +479,8 @@ class Ui_Dialog(object):
         self.l15.mousePressEvent = self.click15
         self.next_label.mousePressEvent = self.funNext
         self.clearLabel.mousePressEvent = self.clearFun
-        
-
+        self.zoom_color_label.mousePressEvent = self.clickZoom
+        self.image_label.mouseMoveEvent=self.mouseMoveEvent
 
 
 
