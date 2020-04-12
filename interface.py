@@ -27,7 +27,7 @@ curent=0
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(1015, 586)
+        Dialog.resize(1020, 630)
 
         self.bgLabel = QtWidgets.QLabel(Dialog)
         self.bgLabel.setGeometry(QtCore.QRect(0, 0, 5000, 5000))
@@ -105,6 +105,10 @@ class Ui_Dialog(object):
         #self.prev_label = QtWidgets.QLabel(Dialog)
         #self.prev_label.setGeometry(QtCore.QRect(800, 520, 100, 50))
         #"self.prev_label.setObjectName("prev_label")
+
+        self.fileName = QtWidgets.QLabel(Dialog)
+        self.fileName.setGeometry(QtCore.QRect(70, 600, 390, 31))
+        self.fileName.setObjectName("fileName")
 
         self.colors_label = QtWidgets.QLabel(Dialog)
         self.colors_label.setGeometry(QtCore.QRect(70, 520, 390, 31))
@@ -404,6 +408,8 @@ class Ui_Dialog(object):
         self.image_label.setPixmap(pixmap)
         color_text = ""
         self.colors_label.setText("")
+        self.fileName.setText(imageList[imageNumber])
+
         #self.next_label.setText("           --->")
 
     def mousePressEvent(self, event):
@@ -428,7 +434,7 @@ class Ui_Dialog(object):
         color_list = list(result)
         
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Movinyl Color Picker"))
         self.l14.setText(_translate("Dialog", ""))   
         self.l3.setText(_translate("Dialog", ""))
         self.l1.setText(_translate("Dialog", ""))
@@ -452,6 +458,9 @@ class Ui_Dialog(object):
         self.colors_label.setText(_translate("Dialog", color_text))
         self.image_label.setObjectName("image_label")
         self.colors_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.fileName.setText(_translate("Dialog", imageList[imageNumber]))
+        self.fileName.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
 
         
         #self.prev_label.setStyleSheet("background-color: #00B903")

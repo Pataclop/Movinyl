@@ -121,4 +121,21 @@ python3 generate_infos.py "X_Men_Origins_Wolverine_2009"; ./page "X_Men_Origins_
 python3 generate_infos.py "X_Men_The_Last_Stand_2006"; ./page "X_Men_The_Last_Stand_2006" 25 96 92 86 109 118 81 75 68 125 90 60 147 158 162
 python3 generate_infos.py "Yes_Man_2008"; ./page "Yes_Man_2008" 33 42 57 126 110 92 152 139 123 191 189 184 64 54 48
 
+
+
+python3 generate_infos.py "Crocodile_Dundee_in_Los_Angeles_2001"; ./page "Crocodile_Dundee_in_Los_Angeles_2001" 119 123 96 115 124 145 106 98 92 59 48 37 149 148 156 
+python3 generate_infos.py "Harry_Potter_and_the_Order_of_the_Phoenix_2007"; ./page "Harry_Potter_and_the_Order_of_the_Phoenix_2007" 13 29 38 94 75 83 26 34 37 53 45 42 45 64 69 
+python3 generate_infos.py "Brice_3_2016"; ./page "Brice_3_2016" 242 212 89 171 177 170 134 114 72 95 133 97 47 37 19
+python3 generate_infos.py "Joy_2015"; ./page "Joy_2015" 71 82 99 56 56 57 123 104 78 93 79 67 113 115 118 
+python3 generate_infos.py "Hellboy_II_The_Golden_Army_2008"; ./page "Hellboy_II_The_Golden_Army_2008" 99 53 20 56 49 40 33 60 65 63 32 12 16 40 49 
+python3 generate_infos.py "Tarzan_1999"; ./page "Tarzan_1999" 114 100 59 21 27 48 126 102 65 57 76 78 71 74 62 
+python3 generate_infos.py "Stuart_Little_1999"; ./page "Stuart_Little_1999" 68 55 31 116 112 119 81 48 31 112 85 66 83 72 69 
+python3 generate_infos.py "The_Fox_and_the_Hound_1981"; ./page "The_Fox_and_the_Hound_1981" 128 147 141 104 89 67 147 168 170 69 91 98 94 111 110 
+python3 generate_infos.py "The_Chronicles_of_Narnia_The_Lion,_the_Witch_and_the_Wardrobe_2005.png"; ./page "The_Chronicles_of_Narnia_The_Lion,_the_Witch_and_the_Wardrobe_2005.png" 111 108 108 107 86 62 6 54 63 53 47 38 28 19 9 
+python3 generate_infos.py "La_Femme_Nikita_1990"; ./page "La_Femme_Nikita_1990" 146 165 159 66 55 39 27 44 94 58 76 57 89 113 108 
+python3 generate_infos.py "Despicable_Me_2010"; ./page "Despicable_Me_2010" 129 159 175 99 73 64 142 118 98 87 126 159 74 42 37 
+python3 generate_infos.py "Dune_1984"; ./page "Dune_1984" 118 101 82 98 95 85 168 153 132 220 210 173 118 115 101 
+python3 generate_infos.py "Harry_Potter_and_the_Deathly_Hallows_Part_2_2011"; ./page "Harry_Potter_and_the_Deathly_Hallows_Part_2_2011" 14 19 14 100 119 99 143 166 140 22 28 21 52 67 58 
+
+
 chmod u+x *
