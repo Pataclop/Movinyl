@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (QHBoxLayout, QVBoxLayout, QLineEdit, QHeaderView,
                              QTableWidgetItem, QSizePolicy)
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
-from tmp import *
+from color_picker import *
 import os
 
 TARGET = "PROCESSING_ZONE"
@@ -28,6 +28,11 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(1015, 586)
+
+        self.bgLabel = QtWidgets.QLabel(Dialog)
+        self.bgLabel.setGeometry(QtCore.QRect(0, 0, 5000, 5000))
+        self.bgLabel.setObjectName("bgLabel")
+
         self.gridLayoutWidget = QtWidgets.QWidget(Dialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(550, 180, 400, 300))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
@@ -130,7 +135,7 @@ class Ui_Dialog(object):
         self.l13.setStyleSheet("background-color: "+str(color_list[12]))
         self.l14.setStyleSheet("background-color: "+str(color_list[13]))
         self.l15.setStyleSheet("background-color: "+str(color_list[14]))
-
+        self.bgLabel.setStyleSheet("background-color: #7F7F7F")
 
     def click1(self, event):
         verif="0123456789 "
@@ -360,10 +365,9 @@ class Ui_Dialog(object):
         self.colors_label.setText(color_text)
 
     def clickZoom(self, event):
-        print("ok")
         verif="0123456789 "
         global color_text
-        h=color_list[14].lstrip('#')
+        h=selectColor.lstrip('#')
         rgb=tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
         srgb=str(rgb)
         for c in srgb :
@@ -406,13 +410,14 @@ class Ui_Dialog(object):
         tmp=0
 
     def mouseMoveEvent(self,event):
-        factor = 4000/img.height()
+        global selectColor
+        #factor = 4000/img.height()
         x = event.pos().x()
         y = event.pos().y()
-        c = img.pixel(x*factor,y*factor)  # color code (integer): 3235912
+        c = img.pixel(x*8,y*8)  # color code (integer): 3235912
         c_hex = QColor(c).name()  # 8bit RGBA: (255, 23, 0, 255)
-        #print( x, y, str(c_hex), img.height(), img.width())
-
+        print( x, y, str(c_hex), img.height(), img.width())
+        selectColor=str(c_hex)
         self.zoom_color_label.setStyleSheet("background-color: "+str(c_hex))
 
     def retranslateUi(self, Dialog):
