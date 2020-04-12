@@ -121,8 +121,6 @@ python3 generate_infos.py "X_Men_Origins_Wolverine_2009"; ./page "X_Men_Origins_
 python3 generate_infos.py "X_Men_The_Last_Stand_2006"; ./page "X_Men_The_Last_Stand_2006" 25 96 92 86 109 118 81 75 68 125 90 60 147 158 162
 python3 generate_infos.py "Yes_Man_2008"; ./page "Yes_Man_2008" 33 42 57 126 110 92 152 139 123 191 189 184 64 54 48
 
-
-
 python3 generate_infos.py "Crocodile_Dundee_in_Los_Angeles_2001"; ./page "Crocodile_Dundee_in_Los_Angeles_2001" 119 123 96 115 124 145 106 98 92 59 48 37 149 148 156 
 python3 generate_infos.py "Harry_Potter_and_the_Order_of_the_Phoenix_2007"; ./page "Harry_Potter_and_the_Order_of_the_Phoenix_2007" 13 29 38 94 75 83 26 34 37 53 45 42 45 64 69 
 python3 generate_infos.py "Brice_3_2016"; ./page "Brice_3_2016" 242 212 89 171 177 170 134 114 72 95 133 97 47 37 19
@@ -137,5 +135,41 @@ python3 generate_infos.py "Despicable_Me_2010"; ./page "Despicable_Me_2010" 129 
 python3 generate_infos.py "Dune_1984"; ./page "Dune_1984" 118 101 82 98 95 85 168 153 132 220 210 173 118 115 101 
 python3 generate_infos.py "Harry_Potter_and_the_Deathly_Hallows_Part_2_2011"; ./page "Harry_Potter_and_the_Deathly_Hallows_Part_2_2011" 14 19 14 100 119 99 143 166 140 22 28 21 52 67 58 
 
+python3 generate_infos.py "Captain_America_The_First_Avenger_2011"; ./page "Captain_America_The_First_Avenger_2011" 95 76 63 28 35 40 58 39 30 73 78 80 109 105 100 
+python3 generate_infos.py "Brave_2012"; ./page "Brave_2012" 84 58 30 72 37 14 116 114 109 27 26 24 102 93 79 
+python3 generate_infos.py "Deepwater_Horizon_2016"; ./page "Deepwater_Horizon_2016" 26 37 29 77 74 61 90 55 25 34 84 86 83 91 80 
+python3 generate_infos.py "Shrek_2_2004"; ./page "Shrek_2_2004" 50 33 50 45 53 23 87 103 126 46 28 17 18 19 23 
+python3 generate_infos.py "Finding_Dory_2016"; ./page "Finding_Dory_2016" 59 170 188 30 67 91 52 87 108 22 33 39 49 52 55 
+python3 generate_infos.py "28_Days_Later_2002"; ./page "28_Days_Later_2002" 12 10 7 37 27 14 146 132 109 54 52 41 59 44 18 
+python3 generate_infos.py "The_Girl_Who_Kicked_the_Hornet's_Nest_2009"; ./page "The_Girl_Who_Kicked_the_Hornet's_Nest_2009" 108 89 51 40 27 18 74 72 71 77 62 43 114 112 111 
+python3 generate_infos.py "Baby_Driver_2017"; ./page "Baby_Driver_2017" 125 122 111 43 58 59 84 77 65 60 63 58 73 60 47 
+python3 generate_infos.py "Sin_City_A_Dame_to_Kill_For_2014"; ./page "Sin_City_A_Dame_to_Kill_For_2014" 74 74 74 114 114 114 56 55 55 38 38 38 21 21 21 
+python3 generate_infos.py "Bambi_1942"; ./page "Bambi_1942" 193 71 12 223 206 201 53 85 84 104 115 137 120 113 99 
+python3 generate_infos.py "The_Girl_Who_Played_with_Fire_2009"; ./page "The_Girl_Who_Played_with_Fire_2009" 148 136 119 83 85 83 99 82 65 116 115 109 50 34 21 
+python3 generate_infos.py "Wreck-It_Ralph_2012"; ./page "Wreck-It_Ralph_2012" 194 158 148 153 162 142 132 71 64 164 96 85 73 33 27 
+python3 generate_infos.py "Howl's_Moving_Castle_2004"; ./page "Howl's_Moving_Castle_2004" 133 148 107 116 151 141 97 64 46 38 39 40 118 120 89 
+python3 generate_infos.py "The_Hunger_Games_Mockingjay_-_Part_1"; ./page "The_Hunger_Games_Mockingjay_-_Part_1" 102 128 127 56 40 16 36 44 40 68 80 77 70 65 51 
+python3 generate_infos.py "Harry_Potter_and_the_Chamber_of_Secrets_2002"; ./page "Harry_Potter_and_the_Chamber_of_Secrets_2002" 25 34 39 80 77 68 76 54 35 97 101 98 58 50 39 
+python3 generate_infos.py "Underworld_Awakening_2012"; ./page "Underworld_Awakening_2012" 0 0 0 44 68 73 14 19 20 14 41 49 54 88 95 8 24 29 73 114 120 
+python3 generate_infos.py "The_Beach_2000"; ./page "The_Beach_2000" 81 93 57 50 47 40 129 130 120 74 91 98 33 32 30 
+python3 generate_infos.py "Cinderella_1950"; ./page "Cinderella_1950" 155 173 186 120 100 97 63 83 102 144 137 134 38 53 71 
+python3 generate_infos.py "Harry_Potter_and_the_Goblet_of_Fire_2005"; ./page "Harry_Potter_and_the_Goblet_of_Fire_2005" 22 38 44 47 55 50 85 98 90 14 27 32 62 72 65 
+python3 generate_infos.py "Apollo_13_1995"; ./page "Apollo_13_1995" 126 127 133 85 82 80 75 62 53 74 73 71 62 40 29 
+python3 generate_infos.py "Zootopia_2016"; ./page "Zootopia_2016" 180 143 128 86 87 98 24 54 86 49 42 43 193 168 164 
+python3 generate_infos.py "Underworld_2003"; ./page "Underworld_2003" 7 11 16 34 54 70 58 72 82 30 40 47 44 57 63 
+python3 generate_infos.py "The_Hunger_Games_2012"; ./page "The_Hunger_Games_2012" 119 112 123 38 55 68 76 49 37 74 83 85 47 62 63 
+python3 generate_infos.py "Harry_Potter_and_the_Philosopher's_Stone_2001"; ./page "Harry_Potter_and_the_Philosopher's_Stone_2001" 16 34 64 143 93 53 118 109 95 55 40 26 55 49 42 
+python3 generate_infos.py "Gone_with_the_Wind_1939"; ./page "Gone_with_the_Wind_1939" 97 80 70 76 60 48 76 33 17 62 49 38 59 26 13 
+python3 generate_infos.py "Cobra_1986"; ./page "Cobra_1986" 95 24 26 92 88 88 35 36 39 66 57 54 51 51 53 
+python3 generate_infos.py "The_Brice_Man_2005"; ./page "The_Brice_Man_2005" 180 181 148 177 160 79 120 121 90 75 71 41 130 112 57 
+python3 generate_infos.py "Harry_Potter_and_the_Half-Blood_Prince_2009"; ./page "Harry_Potter_and_the_Half-Blood_Prince_2009" 28 33 28 144 162 160 74 77 70 13 19 17 54 42 25  
+python3 generate_infos.py "The_Founder_2016"; ./page "The_Founder_2016" 203 203 185 137 139 117 62 65 52 118 117 97 50 54 44 
+python3 generate_infos.py "Brother_Bear_2003"; ./page "Brother_Bear_2003" 174 85 34 21 71 94 82 48 25 93 95 107 137 128 134 
+python3 generate_infos.py "The_Hunger_Games_Mockingjay_-_Part_2_2015"; ./page "The_Hunger_Games_Mockingjay_-_Part_2_2015" 96 60 21 67 98 112 115 128 125 57 44 28 44 57 63 
+python3 generate_infos.py "The_Prestige_2006"; ./page "The_Prestige_2006" 109 116 122 62 64 64 51 47 42 30 34 35 35 28 20 
+python3 generate_infos.py "Beneath_the_Planet_of_the_Apes_1970"; ./page "Beneath_the_Planet_of_the_Apes_1970" 136 153 167 76 87 60 76 64 54 81 79 72 113 107 100 
+python3 generate_infos.py "Warrior_2011"; ./page "Warrior_2011" 85 67 40 135 154 146 76 91 86 20 17 13 60 72 68 
+python3 generate_infos.py "Chicken_Run_2000"; ./page "Chicken_Run_2000" 21 28 46 80 47 26 38 35 30 111 104 96 52 59 65 
+python3 generate_infos.py "Spider-Man_2002"; ./page "Spider-Man_2002" 101 115 142 138 122 116 82 75 76 56 53 56 69 52 47 
 
 chmod u+x *
