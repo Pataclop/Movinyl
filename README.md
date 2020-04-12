@@ -13,8 +13,11 @@ The goal of this project is to make a picture capturing the color spirit of a mo
 - Run ```./2_VIDEO_REMOVER``` to delete all the video files (check they are deleted)
 - Run ```./3_BATCH_LAUNCH``` and wait for the process to end. Not multithreaded yet, but one core per video file
 - Run ```./4_RENAME_SAVE``` and you have all the disks.
+- Remove the directories in ProcessingZone, leave only the disk images, and resize these images to 4000x4000, .png files.
+- Consider adding them to the public [google photo album](https://photos.app.goo.gl/TtnD8yMPEKirk46R6)
+- Replace the spaces and the parentheses in the names by underscores : ```./The Beach (2000)``` -> ```./The_Beach_2000```
 - Update the file 5_MAKE_PAGE with the 5 main colors of your disk, with this format : 
-```python3 generate_infos.py "IMDB_MovieName"; ./page "YourDiskImageName" r g b r g b r g b r g b r g b``` You will have to find these colors by hand for the moment. 
+```python3 generate_infos.py "IMDB_MovieName_Year"; ./page "YourDiskImageName" r g b r g b r g b r g b r g b``` You can use the provided GUI to find colors. Just run ```python3 run_interface.py```
 - Move the disk images at the root of the project
 - Run ```./5_MAKE_PAGE``` and it will create all the pages
 
@@ -28,4 +31,3 @@ Contact : project.movinyl@gmail.com
 ## TODO 
 - Multithreading for disks
 - Multithreading for pages
-- Simplify main color picking
