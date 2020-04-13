@@ -17,6 +17,62 @@ void openImage(int iter){
 	}
 }
 
+void circle_nodisk_nodist(int iter, float width){
+	Mat ims = imread("test.jpg");
+	for (int i=0; i<iter; i++){
+		int rows = ims.rows;
+		int cols = ims.cols;
+		float out_ring = rows/2-SAFE_DIST ;
+		float in_ring =  (rows/2)-(SAFE_DIST+width);
+		int diff = (cols-rows)/2;
+		Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
+		for (int x = 0; x<cols; x++){
+			for (int y = 0; y<rows; y++){
+				//here we crop a circle, 2 pixels thick, centered in the image.
+				//2 pixels intead of 1 to avoid aliassing issues.
+				float dist = sqrt(pow((cols/2)-x,2)+pow((rows/2)-y,2));
+				if (dist < out_ring && dist > in_ring){
+					Vec3b colorS = ims.at<Vec3b>(y, x);
+					Vec4b colorD;
+					colorD.val[0] = colorS.val[0];//blue
+					colorD.val[1] = colorS.val[1];//green
+					colorD.val[2] = colorS.val[2];//red
+					colorD.val[3] = 255;//alpha
+					imd.at<Vec4b>(y,x-diff) = colorD;
+				}
+			}
+		}
+	}
+}
+
+void circle_nodisk(int iter, float width){
+	Mat ims = imread("test.jpg");
+	for (int i=0; i<iter; i++){
+		int rows = ims.rows;
+		int cols = ims.cols;
+		float out_ring = rows/2-SAFE_DIST ;
+		float in_ring =  (rows/2)-(SAFE_DIST+width);
+		int diff = (cols-rows)/2;
+		Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
+		for (int x = 0; x<cols; x++){
+			for (int y = 0; y<rows; y++){
+				//here we crop a circle, 2 pixels thick, centered in the image.
+				//2 pixels intead of 1 to avoid aliassing issues.
+				float dist = sqrt(pow((cols/2)-x,2)+pow((rows/2)-y,2));
+				if (dist < out_ring && dist > in_ring){
+					//Vec3b colorS = ims.at<Vec3b>(y, x);
+					//Vec4b colorD;
+					//colorD.val[0] = colorS.val[0];//blue
+					//colorD.val[1] = colorS.val[1];//green
+					//colorD.val[2] = colorS.val[2];//red
+					//colorD.val[3] = 255;//alpha
+					//imd.at<Vec4b>(y,x-diff) = colorD;
+				}
+			}
+		}
+	}
+}
+
 void circle(int iter, float width){
 	Mat ims = imread("test.jpg");
 	for (int i=0; i<iter; i++){
@@ -38,13 +94,13 @@ void circle(int iter, float width){
 					colorD.val[1] = colorS.val[1];//green
 					colorD.val[2] = colorS.val[2];//red
 					colorD.val[3] = 255;//alpha
-
 					imd.at<Vec4b>(y,x-diff) = colorD;
 				}
 			}
 		}
 	}
 }
+
 void resize(Mat ims, int iter, float factor){
 	for(int i=0; i<iter; i++){
 		Mat tmp;
@@ -92,6 +148,8 @@ int main(int argc, char const *argv[])
 
 
 
+
+
 	printf("circle 1 = ");
 	 start = high_resolution_clock::now(); 
 	circle(numberIter, 1);
@@ -106,7 +164,20 @@ int main(int argc, char const *argv[])
 	 duration = duration_cast<milliseconds>(stop - start); 
 	printf("%d\n",(int)duration.count());
 
+	printf("circle_nodisk 2 = ");
+	 start = high_resolution_clock::now(); 
+	circle_nodisk(numberIter, 2);
+	 stop = high_resolution_clock::now(); 
+	 duration = duration_cast<milliseconds>(stop - start); 
+	printf("%d\n",(int)duration.count());
 
+
+	printf("circle_nodisk_nodist 2 = ");
+	 start = high_resolution_clock::now(); 
+	circle_nodisk_nodist(numberIter, 2);
+	 stop = high_resolution_clock::now(); 
+	 duration = duration_cast<milliseconds>(stop - start); 
+	printf("%d\n",(int)duration.count());
 
 	printf("resize 4 = ");
 	 start = high_resolution_clock::now(); 
