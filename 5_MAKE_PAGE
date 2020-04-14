@@ -1,3 +1,5 @@
+#!/bin/bash
+
 python3 generate_infos.py "12_Angry_Men_1957" ; ./page "12_Angry_Men_1957" 119 119 119 169 169 169 21 21 21 87 87 87 220 220 220
 python3 generate_infos.py "2010_1984" ; ./page "2010_1984" 119 7 26 207 221 227 63 86 49 108 104 100 75 61 59
 python3 generate_infos.py "28_Days_Later_2002"; ./page "28_Days_Later_2002" 12 10 7 37 27 14 146 132 109 54 52 41 59 44 18 
