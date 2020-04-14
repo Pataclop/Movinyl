@@ -1,9 +1,3 @@
-#!/bin/bash
-
-
-#!/bin/bash
-
-
 python3 generate_infos.py "12_Angry_Men_1957" ; ./page "12_Angry_Men_1957" 119 119 119 169 169 169 21 21 21 87 87 87 220 220 220
 python3 generate_infos.py "2010_1984" ; ./page "2010_1984" 119 7 26 207 221 227 63 86 49 108 104 100 75 61 59
 python3 generate_infos.py "28_Days_Later_2002"; ./page "28_Days_Later_2002" 12 10 7 37 27 14 146 132 109 54 52 41 59 44 18 
@@ -49,7 +43,6 @@ python3 generate_infos.py "Dinosaur_2000"; ./page "Dinosaur_2000" 18 31 47 144 1
 python3 generate_infos.py "District_9_2009"; ./page "District_9_2009" 204 204 193 123 125 119 155 152 142 27 34 30 125 116 106 
 python3 generate_infos.py "Django_Unchained_2012"; ./page "Django_Unchained_2012" 77 46 28 172 153 134 137 135 139 133 114 29 32 18 15
 python3 generate_infos.py "Dumbo_1941"; ./page "Dumbo_1941" 116 149 158 134 96 50 24 67 108 140 123 91 128 129 83 
-python3 generate_infos.py "Dune_1984"; ./page "Dune_1984" 118 101 82 98 95 85 168 153 132 220 210 173 118 115 101 
 python3 generate_infos.py "Dune_1984"; ./page "Dune_1984" 236 225 203 212 179 146 88 89 84 129 127 116 49 45 39
 python3 generate_infos.py "Eddie_the_Eagle_2016"; ./page "Eddie_the_Eagle_2016" 154 155 138 49 43 35 92 87 74 137 135 118 76 52 28 
 python3 generate_infos.py "Enter_the_Void_2009"; ./page "Enter_the_Void_2009" 102 21 16 7 1 0 92 31 122 196 179 152 21 42 19
@@ -119,7 +112,7 @@ python3 generate_infos.py "Shrek_the_Third_2007"; ./page "Shrek_the_Third_2007" 
 python3 generate_infos.py "Shutter_Island_2010"; ./page "Shutter_Island_2010" 75 89 54 86 98 75 69 87 85 106 104 89 39 47 43
 python3 generate_infos.py "Sicario_2015"; ./page "Sicario_2015" 169 170 157 137 126 88 30 43 45 92 84 59 89 93 83
 python3 generate_infos.py "Sin_City_A_Dame_to_Kill_For_2014"; ./page "Sin_City_A_Dame_to_Kill_For_2014" 74 74 74 114 114 114 56 55 55 38 38 38 21 21 21 
-python3 generate_infos.py "Spider-Man_2002"; ./page "Spider-Man_2002" 101 115 142 138 122 116 82 75 76 56 53 56 69 52 47 
+python3 generate_infos.py "Spider-Man_2002"; ./page "Spider_Man_2002" 101 115 142 138 122 116 82 75 76 56 53 56 69 52 47 
 python3 generate_infos.py "Spirited_Away_2001"; ./page "Spirited_Away_2001" 110 127 73 117 84 70 99 52 38 143 146 119 99 52 38
 python3 generate_infos.py "Star_Trek_Into_Darkness_2013"; ./page "Star_Trek_Into_Darkness_2013" 142 32 13 80 162 166 98 46 64 7 90 119 148 174 180
 python3 generate_infos.py "Star_Wars_Episode_II_Attack_of_the_Clones_2002"; ./page "Star_Wars_Episode_II_Attack_of_the_Clones_2002" 183 128 91 178 190 189 104 79 60 87 93 94 66 70 71
