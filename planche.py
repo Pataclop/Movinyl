@@ -10,9 +10,9 @@ import sys
 
 def ecris (nom, police, taille, largeur):
 
-	para = textwrap.wrap(nom, width=largeur)
+	para = textwrap.wrap(nom, width=35)
 
-	MAX_W, MAX_H = largeur, largeur//10
+	MAX_W, MAX_H = largeur, largeur//5
 	im = PIL.Image.new('RGBA', (MAX_W, MAX_H), (0, 0, 0, 0))
 	draw = ImageDraw.Draw(im)
 
@@ -65,13 +65,13 @@ def faitou (im_number):
 	lines = f.readlines()
 	f.close()
 	count=0
-	l=5
-	h=5
+	l=18
+	h=10
 	for planche in range (im_number//(l*h)+1):
 		planche_name = "planche" + str(planche) + ".png"
-		L=10000
-		H=10000
-		out= PIL.Image.new('RGBA', (L,H), (0,0,0,255)) 
+		L=36000
+		H=20000
+		out= PIL.Image.new('RGBA', (L,H+H//50), (0,0,0,255)) 
 		positions=[0]*(2*l*h)
 		cmp = 0
 		resized_disk_size=int((8.5*L)/(l*10))
@@ -87,7 +87,7 @@ def faitou (im_number):
 				im = raw.convert("RGBA")          
 				im_resize=im.resize((resized_disk_size,resized_disk_size), PIL.Image.LANCZOS) #we have l*h slots, we want the disk to be 90% of the size of the slot.
 				out.paste(im_resize, (positions[2*x],positions[2*x+1]), im_resize) #paste the disc at the right place
-				page_num=ecris(lines[count], 'futura medium bt.ttf', 50, int(L/l)) 
+				page_num=ecris(lines[count], 'futura medium bt.ttf', 45, int(L/l)) 
 
 				out.paste(page_num, (positions[2*x]-int((1.5*L)/(l*10))//2,positions[2*x+1]+int((8.4*L)/(l*10))), page_num)
 				print (x)
