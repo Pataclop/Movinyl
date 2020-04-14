@@ -266,7 +266,9 @@ void insert_in_frame(std::string name, int aa1, int aa2, int aa3,int aa4,int aa5
 
 int main(int argc, char const *argv[])
 {
-	insert_in_frame(argv[1],
+	std::string name = argv[1];
+	name.erase(std::remove(name.begin(), name.end(), '\"'), name.end());
+	insert_in_frame(name,
 		atoi(argv[2]),
 		atoi(argv[3]),
 		atoi(argv[4]),

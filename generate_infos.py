@@ -33,6 +33,7 @@ def ecris (nom, police, saveName, taille):
 
 raw=sys.argv[1]
 raw=raw.replace("_", " ") 
+raw=raw.replace("\"", "") 
 word_list = raw.split()
 year=word_list[-1]
 length=len(raw)
