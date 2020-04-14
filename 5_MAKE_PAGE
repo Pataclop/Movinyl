@@ -3,6 +3,7 @@ for arg in "$@"
 do
   case $arg in
 
+
     -h|--help)
     echo "***Help Modal***" <&2
     echo "Run the script with the flag -s and arguments movie_name r g b r g b r g b r g b r g b"
@@ -47,3 +48,4 @@ do
     ;;
     esac
 done
+
