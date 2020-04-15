@@ -18,13 +18,13 @@
 <br />
 <p align="center">
   <a href="https://github.com/Pataclop/Movinyl">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="/logos/movinyl_logo_square_bold.png" alt="Logo" width="400">
   </a>
 
   <h3 align="center">Movinyl</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Capture the colors of your favorite movie!
     <br />
     <a href="https://github.com/Pataclop/Movinyl"><strong>Explore the docs »</strong></a>
     <br />
@@ -59,7 +59,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://raw.githubusercontent.com/Pataclop/Movinyl/master/example_img/3.jpg)
 
 There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need.
 
