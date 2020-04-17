@@ -1,5 +1,7 @@
 PROCESSING_ZONE
 .DS_Store
 .DS_Store
-*.pyc
-.DS_Store
+disk
+page
+pymdb
+*.png
