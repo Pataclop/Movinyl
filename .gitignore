@@ -5,3 +5,5 @@ disk
 page
 pymdb
 *.png
+*.pyc
+.DS_Store
