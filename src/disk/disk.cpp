@@ -2,6 +2,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <string>
+#include <omp.h>
+#define NTHREADS 4
 using namespace cv;
 
 //some movies have a black borderof a few pixels.
@@ -20,7 +22,9 @@ cv::Mat ExtractCircle (Mat ims){
 	float in_ring =  (rows/2)-(SAFE_DIST+WIDTH);
 	int diff = (cols-rows)/2;
 	Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
-
+	double t_start = 0.0, t_taken;
+	t_start = omp_get_wtime();
+	#pragma omp parallel for num_threads(NTHREADS)
 	for (int x = 0; x<cols; x++){
 		for (int y = 0; y<rows; y++){
 			//here we crop a circle, 2 pixels thick, centered in the image.
@@ -38,6 +42,8 @@ cv::Mat ExtractCircle (Mat ims){
 			}
 		}
 	}
+	t_taken = omp_get_wtime() - t_start;
+	printf("Time taken for the main program: %f\n", t_taken);
 	return imd;
 }
 
