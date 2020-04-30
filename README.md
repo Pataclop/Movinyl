@@ -142,6 +142,11 @@ See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of 
 
 Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us!
 
+Do not hesitate to add your dsiks to this album, hugely appreciated
+[google photo album](https://github.com/Pataclop/Movinyl)
+(4000x4000 pixels, PNG files)
+
+
 For code contributions: 
 
 1. Fork the Project
