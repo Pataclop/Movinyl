@@ -4,12 +4,11 @@
 #include <string>
 using namespace cv;
 
-//this does the same thing as the regular disk, but it outputs only one color per frame. Not as color acurate but should be faster.
+//this does the same thing as the regular disk, but it outputs only one color per frame. Not as color acurate but should be MUCH faster.
 
 #define WIDTH 2
 
 cv::Mat ExtractCircle();
-
 
 void GenerateDisk(int FrameNumber)
 {
@@ -25,8 +24,7 @@ void GenerateDisk(int FrameNumber)
 
 		resize(img, tmp, Size(1, 1), INTER_NEAREST);
 		Vec3b colorS = ims1.at<Vec4b>(y, x);
-			circle(out, Point(FrameNumber, FrameNumber), FrameNumber - i, Scalar(colorS.val[0], colorS.val[1], colorS.val[2]), CV_FILLED, 8, 0);
-
+		circle(out, Point(FrameNumber, FrameNumber), FrameNumber - i, Scalar(colorS.val[0], colorS.val[1], colorS.val[2]), CV_FILLED, 8, 0);
 	}
 	imwrite("save.png", out);
 }
