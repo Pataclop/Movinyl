@@ -83,7 +83,6 @@ void GenerateDisk(int FrameNumber){
 		out = Insert(tmp, out, i);
 	}
 	imwrite("save.png", out);
-
 }
 
 int main(int argc, char const *argv[])
