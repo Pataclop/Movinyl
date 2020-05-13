@@ -17,14 +17,15 @@ void GenerateDisk(int FrameNumber)
 	printf("START\n");
 	for (int i = 0; i < FrameNumber; i++)
 	{
+		if(i%10==0)
+			printf("%d\n",i);
 		std::string name = "images/";
 		name += std::to_string(i + 1);
 		name += ".jpg";
 		Mat img = imread(name);
-
 		resize(img, tmp, Size(1, 1), INTER_NEAREST);
-		Vec3b colorS = ims1.at<Vec4b>(y, x);
-		circle(out, Point(FrameNumber, FrameNumber), FrameNumber - i, Scalar(colorS.val[0], colorS.val[1], colorS.val[2]), CV_FILLED, 8, 0);
+		Vec3b colorS = img.at<Vec3b>(0,0);
+		circle(out, Point(FrameNumber, FrameNumber), FrameNumber - i, Scalar(colorS.val[0], colorS.val[1], colorS.val[2], 255), 8, 1);
 	}
 	imwrite("save.png", out);
 }
