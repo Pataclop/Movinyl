@@ -4,5 +4,16 @@ for file in *
 do
 mkdir "${file%.*}"
 mkdir "${file%.*}"/images
-ffmpeg -i "${file}" -qscale:v 2 -r 0.4 "${file%.*}"/images/%d.jpg &
-done
+len=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $file)
+
+echo length $len
+
+r=$(echo "$len / 2100" | bc -l)
+echo $r
+for i in {0..2200}  
+do  
+stamp=$(echo "$i * $r" | bc -l)
+
+ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp -i $file    -frames:v 1 "${file%.*}"/images/$i.jpg &  
+done &
+done 
