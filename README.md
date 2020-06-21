@@ -133,9 +133,8 @@ or
 
 See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of proposed features and known issues. Please feel free to add to our roadmap. 
 
-* Multithreading for disks.cpp
+* better multithreading for disks.cpp
 * Multithreading for pages.cpp
-* Make frame extraction faster
 * Reduce the number of scripts and instructions to make the experience more seamless
 
 <!-- CONTRIBUTING -->
