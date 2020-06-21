@@ -8,9 +8,9 @@ len=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrapper
 
 echo length $len
 
-r=$(echo "$len / 2100" | bc -l)
+r=$(echo "$len / 2005" | bc -l)
 echo $r
-for i in {0..2200}  
+for i in {0..2010}  
 do  
 stamp=$(echo "$i * $r" | bc -l)
 
