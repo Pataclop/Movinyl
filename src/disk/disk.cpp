@@ -2,6 +2,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <string>
+#include <omp.h>
 using namespace cv;
 
 //some movies have a black borderof a few pixels.
@@ -20,8 +21,9 @@ cv::Mat ExtractCircle (Mat ims){
 	float in_ring =  (rows/2)-(SAFE_DIST+WIDTH);
 	int diff = (cols-rows)/2;
 	Mat imd = Mat(rows, rows, CV_8UC4, Scalar(0,0,0,0));//temporary image, containing only a circle, the rest is tranparent.
-
+	#pragma omp parallel for
 	for (int x = 0; x<cols; x++){
+		#pragma omp parallel for
 		for (int y = 0; y<rows; y++){
 			//here we crop a circle, 2 pixels thick, centered in the image.
 			//2 pixels intead of 1 to avoid aliassing issues.
@@ -44,7 +46,9 @@ cv::Mat ExtractCircle (Mat ims){
 //This one pastes the circle in the final image, slowly creating a disk with all the circles.
 cv::Mat Insert(Mat ims1, Mat ims2, int margin){
 	int rows = ims1.rows;
+	#pragma omp parallel for
 	for(int x=0; x<rows; x++){
+		#pragma omp parallel for
 		for(int y=0; y<rows; y++){
 			Vec4b colorS = ims1.at<Vec4b>(y, x);
 			Vec4b colorD;
@@ -66,6 +70,7 @@ void GenerateDisk(int FrameNumber){
 	//the output image will have a disk, made of FrameNumber circles, each 1 pixel wide.
 	Mat out = Mat(FrameNumber*2, FrameNumber*2, CV_8UC4, Scalar(0,0,0,255));
 	printf("START\n");
+	#pragma omp for
 	for (int i=0; i<FrameNumber; i++){
 		std::string name = "images/";
 		name += std::to_string(i+1);
