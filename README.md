@@ -86,6 +86,7 @@ git clone https:://github.com/Pataclop/Movinyl.git
 ```sh
 ./0_Setup
 ```
+Check for error messages as you might still lack some dependancies
 <!-- USAGE EXAMPLES -->
 ## Usage
 
