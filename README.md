@@ -143,7 +143,7 @@ See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of 
 
 Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us!
 
-Do not hesitate to add your dsiks to this album 
+Do not hesitate to add your disks to this album 
 [google photo album](https://photos.app.goo.gl/TtnD8yMPEKirk46R6)
 (4000x4000 pixels, PNG files)
 
