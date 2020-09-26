@@ -66,7 +66,8 @@ Take a look at what we're talking about
 ### Built With
 * [Pymdb](https://github.com/dannyarcher/pymdb)
 * C++ and Python
-* OpenMP (coming soon!)
+* [FFMPEG] (https://ffmpeg.org)
+* [OpenMP] (https://www.openmp.org)
 
 <!-- GETTING STARTED -->
 ## Getting Started
