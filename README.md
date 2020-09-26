@@ -160,8 +160,7 @@ For code contributions:
 <!-- LICENSE -->
 ## License
 
-Coming Soon!
-
+MIT
 <!-- CONTACT -->
 ## Contact
 
