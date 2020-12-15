@@ -6,6 +6,6 @@ cp ../disk  "${file}"/
 cd "${file}"/
 num=$(ls -l images | egrep -c '^-')-2000
 echo "${num}"
-./disk 200 &
+./disk 2000 &
 cd ..
 done
