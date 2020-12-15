@@ -79,9 +79,7 @@ void GenerateDisk(int FrameNumber){
 		//First we resize the picture to the wanted size.
 		//This size is dependant of the frame position in the disk.
 		//The more the image is late in the film, the smaller it will be.
-		try {
-			resize(img, tmp, Size((2*FrameNumber)-2*i, (2*FrameNumber)-2*i),INTER_NEAREST);
-		} catch (const std::exception& e) { /* */ }
+		resize(img, tmp, Size((2*FrameNumber)-2*i, (2*FrameNumber)-2*i),INTER_NEAREST);
 		//Then a circle is extracted from the image
 		tmp=ExtractCircle(tmp);
 		if(i%10==0)
