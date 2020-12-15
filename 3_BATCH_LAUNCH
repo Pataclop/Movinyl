@@ -4,7 +4,8 @@ for file in *
 do
 cp ../disk  "${file}"/
 cd "${file}"/
-num=$(ls -l images | egrep -c '^-')
-./disk "${num}" &
+num=$(ls -l images | egrep -c '^-')-2000
+echo "${num}"
+./disk 200 &
 cd ..
 done
