@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 SRCS = disk_mono.cpp 
 PROG = disk
 
-OPENCV = `pkg-config opencv --cflags --libs`
+OPENCV = `pkg-config opencv4 --cflags --libs`
 LIBS = $(OPENCV)
 
 $(PROG):$(SRCS)
