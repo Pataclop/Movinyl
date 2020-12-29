@@ -3,6 +3,7 @@
 #include <opencv2/highgui.hpp>
 #include <string>
 #include <omp.h>
+#include <iostream>
 using namespace cv;
 
 //some movies have a black border of a few pixels.
@@ -92,6 +93,7 @@ void GenerateDisk(int FrameNumber){
 
 int main(int argc, char const *argv[])
 {
+    setbuf(stdout, NULL);
 	GenerateDisk(atoi(argv[1]));
 	return 0;
 }
