@@ -83,45 +83,24 @@ Everything required for the project is in the installation script within the rep
 ```sh
 git clone https:://github.com/Pataclop/Movinyl.git
 ```
-2. Run the project setup to install required libraries and compile the project
-```sh
-./0_Setup
-```
-Check for error messages as you might still lack some dependancies
-<!-- USAGE EXAMPLES -->
-## Usage
+2. Build the docker image
 
-3. Place your video files in the PROCESSING_ZONE folder
 ```sh
-cp ~/Videos/YOUR_VIDEO.mp4 ~/Movinyl/PROCESSING_ZONE/YOUR_VIDEO.mp4
+sudo docker build -t movinyl .
 ```
-4. Run the image generator script
-```sh
-./1_IMAGE_GENERATOR
-```
-5. Cleanup with the video remover script
-```sh
-./2_VIDEO_REMOVER
-```
-6. Run the disk creator script and wait for the image to be generated
-```sh
-./3_BATCH_LAUNCH
-```
-7. Run the rename script to organize your folder and rename files
-```sh
-./4_RENAME_SAVE
-```
-8. Replace the spaces and the parentheses in the names by underscores 
-```./The Beach (2000)``` -> ```./The_Beach_2000```
+3. Generate the disks
 
-9. (Optional) Run the color picker GUI to select 5 colors for the movie poster
+```sh
+docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
+```
+4. (Optional) Run the color picker GUI to select 5 colors for the movie poster
 
 ```sh
 python3 run_interface.py
 ```
-10. Move the disk images to the root of the project
+5. Move the disk images to the root of the project
 
-11. Run the make page script for a single video or for multiple videos 
+6. Run the make page script for a single video or for multiple videos 
 ```sh
 ./5_MAKE_PAGE -s movie_name r g b r g b r g b r g b r g b
 ```
@@ -134,7 +113,7 @@ or
 ## Roadmap
 
 See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of proposed features and known issues. Please feel free to add to our roadmap. 
-
+* process multiple movies in parallel 
 * better multithreading for disks.cpp
 * Multithreading for pages.cpp
 * Reduce the number of scripts and instructions to make the experience more seamless
