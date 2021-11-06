@@ -81,7 +81,7 @@ Everything required for the project is in the installation script within the rep
 
 1. Clone the repository
 ```sh
-git clone https:://github.com/Pataclop/Movinyl.git
+git clone https://github.com/Pataclop/Movinyl.git
 ```
 2. Build the docker image
 
