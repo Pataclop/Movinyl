@@ -10,8 +10,8 @@ using namespace cv;
 //some movies have a black border of a few pixels.
 //To avoid it screwing the disk image, the croped circle will be in a center square of size Height-2*SAFE_DIST
 //try to keep it over 15.
-#define SAFE_DIST 40
-#define WIDTH 2
+#define SAFE_DIST 10
+#define WIDTH 1.001
 
 int THREAD_COUNT = omp_get_max_threads();
 
