@@ -76,24 +76,39 @@ Take a look at what we're talking about
 
 Everything required for the project is in the installation script within the repository.
 
-### Installation
+### HOW TO CREATE A DISK
 
 
-1. Clone the repository
+1. Compile & install some dependancies 
 ```sh
-git clone https://github.com/Pataclop/Movinyl.git
+./0_SETUP
 ```
-2. Build the docker image
+2. Put your video movies in the PROCESSING_ZONE folder. WARNING : They will be deleted
+
+3. Generate the disks (ressource intensive, go take a cup of wine)
+
+```sh
+./6_BATCH
+```
+
+### HOW TO CREATE A DISK - DOCKER 
+(slower, but you can use your computer while it is processing)
+
+1. Build the docker stuff
+
 
 ```sh
 sudo docker build -t movinyl .
 ```
-3. Generate the disks
+2. Generate the disks
 
 ```sh
 docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 ```
-4. (Optional) Run the color picker GUI to select 5 colors for the movie poster
+
+### HOW TO CREATE A PAGE
+
+1. (Optional) Run the color picker GUI to select 5 colors for the movie poster
 
 ```sh
 python3 run_interface.py
@@ -113,17 +128,17 @@ or
 ## Roadmap
 
 See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of proposed features and known issues. Please feel free to add to our roadmap. 
-* process multiple movies in parallel 
-* better multithreading for disks.cpp
 * Multithreading for pages.cpp
 * Reduce the number of scripts and instructions to make the experience more seamless
+* QRcode in pages
+* FASTER!
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
 Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us!
 
-Do not hesitate to add your disks to this album 
+Do not hesitate to add your disks to this album, or send us your creations by mail ! (plus that would save us the time to re-process your movies)
 [google photo album](https://photos.app.goo.gl/TtnD8yMPEKirk46R6)
 (4000x4000 pixels, PNG files)
 
