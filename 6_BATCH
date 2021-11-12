@@ -1,0 +1,46 @@
+#!/bin/bash
+
+cd PROCESSING_ZONE
+for file in *
+do
+mkdir "${file%.*}"
+mkdir "${file%.*}"/images
+len=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $file)
+
+echo "length of the movie = " $len
+
+r=$(echo "$len / 2010" | bc -l)
+echo $r
+for i in {0..2005}  
+do  
+stamp=$(echo "$i * $r" | bc -l)
+
+ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp -i $file  -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
+done &
+
+
+number_of_processed_frames=$(ls "${file%.*}"/images | wc -l)
+while ((number_of_processed_frames<2000))
+do 
+((number_of_processed_frames=$(ls "${file%.*}"/images | wc -l)))
+done
+
+
+rm $file
+
+
+cp ../disk  "${file%.*}"/
+cd ""${file%.*}""/
+num=$(ls -l images | egrep -c '^-')-2000
+echo "${num}"
+./disk 2000
+cd ..
+done 
+
+for file in *
+do
+cd "${file}"/
+mv "save.png" "${file}.png"
+mv *.png ..
+cd ..
+done
