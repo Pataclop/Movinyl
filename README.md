@@ -83,7 +83,7 @@ Everything required for the project is in the installation script within the rep
 ```sh
 ./0_SETUP
 ```
-2. Put your video movies in the PROCESSING_ZONE folder. WARNING : They will be deleted
+2. Put your movies in the PROCESSING_ZONE folder. WARNING : They will be deleted
 
 3. Generate the disks (ressource intensive, go take a cup of wine)
 
