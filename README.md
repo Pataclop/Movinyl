@@ -113,9 +113,9 @@ docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 ```sh
 python3 run_interface.py
 ```
-5. Move the disk images to the root of the project
+2. Move the disk images to the root of the project
 
-6. Run the make page script for a single video or for multiple videos 
+3. Run the make page script for a single video or for multiple videos 
 ```sh
 ./5_MAKE_PAGE -s movie_name r g b r g b r g b r g b r g b
 ```
