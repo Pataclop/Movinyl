@@ -1,21 +1,23 @@
 #!/bin/bash
 
 cd PROCESSING_ZONE
+rename  's/[()]//g' *
+rename  's/[ :!]/_/g' *
 for file in *
 do
 mkdir "${file%.*}"
 mkdir "${file%.*}"/images
 len=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $file)
 
-echo "length of the movie = " $len
+echo "${file%.*}"
+echo "Extracting frames"
 
-r=$(echo "$len / 2010" | bc -l)
-echo $r
-for i in {0..2005}  
+r=$(echo "$len / 2005" | bc -l)
+for i in {0..2003}  
 do  
 stamp=$(echo "$i * $r" | bc -l)
 
-ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp -i $file  -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
+ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp  -i  $file -vf "cropdetect=24:16:0" -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
 done &
 
 
