@@ -4,14 +4,15 @@
 #include <string>
 #include <omp.h>
 #include <iostream>
+#include "progressbar.hpp"
 
 using namespace cv;
 
 //some movies have a black border of a few pixels.
 //To avoid it screwing the disk image, the croped circle will be in a center square of size Height-2*SAFE_DIST
 //try to keep it over 15.
-#define SAFE_DIST 10
-#define WIDTH 1.001
+#define SAFE_DIST 15
+#define WIDTH 1.001 //this is the thickness of the circles.
 
 int THREAD_COUNT = omp_get_max_threads();
 
@@ -66,6 +67,11 @@ cv::Mat Insert(Mat ims1, Mat ims2, int margin){
 
 // Read all frames, extract circles, and merge them into single disk
 void GenerateDisk(int FrameNumber) {
+	progressbar bar(2000);
+    bar.set_todo_char(" ");
+    bar.set_done_char("█");
+    bar.set_opening_bracket_char("{");
+    bar.set_closing_bracket_char("}");
 	// Increase stack size per thread, overwrite existing env variable
 	setenv("OMP_STACKSIZE","10M",1);
 	printf("START\n");
@@ -94,8 +100,10 @@ void GenerateDisk(int FrameNumber) {
 			// Extract circle from image
 			extracted=ExtractCircle(extracted);
 			// Print values for progress bar
-			if(i%10==0)
-				printf("%d\n",i);
+			#pragma omp critical
+				bar.update();
+			
+
 			// Store single disk back into the Matrix for each thread
 			vectorOfMatrices[omp_get_thread_num()] = Insert(extracted, vectorOfMatrices[omp_get_thread_num()], i);
 		}
