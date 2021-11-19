@@ -1,4 +1,17 @@
 #!/bin/bash
+
+sudo apt install libopencv-dev -y
+sudo apt-get install build-essential -y
+sudo apt install npm -y
+sudo apt install python3-pip && sudo pip install pipenv
+git clone https://github.com/smmnloes/pyMDB.git
+cd pyMDB/py-backend
+pipenv install
+cd ../angular-frontend/
+npm install
+
+
+
 cd src
 cd disk
 make
@@ -8,9 +21,7 @@ cd page
 make
 mv page ../../
 cd ..
-cd pymdb/
-sudo python setup.py install
-sudo python3 setup.py install
 cd ..
-cd ..
+
 mkdir PROCESSING_ZONE
+
