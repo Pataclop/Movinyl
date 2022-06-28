@@ -3,7 +3,7 @@ CFLAGS = -g -Wall
 SRCS =  page.cpp
 PROG = page
 
-OPENCV = `pkg-config opencv4 --cflags --libs`
+OPENCV = `pkg-config opencv --cflags --libs`
 LIBS = $(OPENCV)
 
 $(PROG):$(SRCS)
