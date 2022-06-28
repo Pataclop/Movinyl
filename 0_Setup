@@ -4,11 +4,8 @@ sudo apt install libopencv-dev -y
 sudo apt-get install build-essential -y
 sudo apt install npm -y
 sudo apt install python3-pip && sudo pip install pipenv
-git clone https://github.com/smmnloes/pyMDB.git
-cd pyMDB/py-backend
-pipenv install
-cd ../angular-frontend/
-npm install
+sudo apt  install ffmpeg
+sudo apt install rename
 
 
 
@@ -24,4 +21,3 @@ cd ..
 cd ..
 
 mkdir PROCESSING_ZONE
-
