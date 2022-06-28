@@ -119,5 +119,6 @@ int main(int argc, char const *argv[])
 {
     setbuf(stdout, NULL);
 	GenerateDisk(atoi(argv[1]));
+	printf("\n");
 	return 0;
 }
