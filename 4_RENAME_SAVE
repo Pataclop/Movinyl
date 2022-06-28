@@ -1,9 +1,0 @@
-#!/bin/bash
-cd PROCESSING_ZONE
-for file in *
-do
-cd "${file}"/
-mv "save.png" "${file}.png"
-mv *.png ..
-cd ..
-done
