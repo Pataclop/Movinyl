@@ -1,7 +1,9 @@
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
+import PIL
 import textwrap
+import extcolors
 import os
 import subprocess
 import sys
@@ -72,6 +74,18 @@ write_text_to_image(movie_name, 'futura medium bt.ttf', "titre.png", 200)
 write_text_to_image(cleanYear, 'futura light bt.ttf', "année.png", 200)
 write_text_to_image(real, 'futura medium bt.ttf', "réalisateur.png", 170)
 write_text_to_image(duration, 'futura light bt.ttf', "durée.png", 150)
+H = 8000
+W = 5000
+file1 = open('PAGE_ZONE/colors.txt', 'r')
+Lines = file1.readlines()
 
-
+im = Image.new('RGB', (W, W//7), (0, 0, 0))
+draw = ImageDraw.Draw(im)
+for i in range (14) :
+    if (i%2==0) :
+        draw.ellipse(((i*W//14)+W//28, 50, ((i+1)*W//14)+W//28, (W//14)+50), fill=(127, 127, 127))
+        l = ((re.sub("[^\w]", " ",  Lines[(i+4)//2]).split()))
+        t=(int(l[0]), int(l[1]), int(l[2]))
+        draw.ellipse(((i*W//14)+W//28+5, 55, ((i+1)*W//14)+W//28-5, (W//14)+45), fill=t)
+im.save('palette.png')
 print("DONE")
