@@ -1,51 +1,13 @@
-#!/bin/bash
-for arg in "$@"
+cd PAGE_ZONE
+for file in *
 do
-  case $arg in
-
-
-    -h|--help)
-    echo "***Help Modal***" <&2
-    echo "Run the script with the flag -s and arguments movie_name r g b r g b r g b r g b r g b"
-    echo "or with the flag -f with a file path where these arguments are stored."<&2
-    shift
-    ;;
-
-    -s|--single)  # User provides movie and colors
-    if [ $# -eq 17 ]
-    then
-      echo "Generating single page..."
-      MOVIE_NAME="$2"
-      C1=("$3" "$4" "$5")
-      C2=("$6" "$7" "$8")
-      ## clear stack
-      for i in {1..8}
-      do
-        shift
-      done
-      C3=("$1" "$2" "$3")
-      C4=("$4" "$5" "$6")
-      C5=("$7" "$8" "$9")
-      ## clear stack
-      for i in {1..9}
-      do
-        shift
-      done
-      python3 generate_infos.py $MOVIE_NAME; ./page $MOVIE_NAME ${C1[*]} ${C2[*]} ${C3[*]} ${C4[*]} ${C5[*]}
-    else
-      echo "Incorrect number of arguments!"
-    fi
-    ;;
-
-    -f|--file)  # User provides file with movies and colors
-    FILE_NAME="$2"
-    echo "Looking into $FILE_NAME..."
-    shift
-    while IFS=" " read MOVIE_NAME C1[0] C1[1] C1[2] C2[0] C2[1] C2[2] C3[0] C3[1] C3[2] C4[0] C4[1] C4[2] C5[0] C5[1] C5[2]
-      do
-        python3 generate_infos.py $MOVIE_NAME; ./page $MOVIE_NAME ${C1[*]} ${C2[*]} ${C3[*]} ${C4[*]} ${C5[*]}
-    done <"$FILE_NAME"
-    ;;
-    esac
-done
-
+convert -crop 150x3925+1950+50 "${file}" crop.png 
+extcolors crop.png -t 12 -l 8 > colors.txt
+cd ..
+python3 generate_infos.py "${file%.*}"
+cd PAGE_ZONE
+rm colors.txt crop.png
+cp "${file}" ..
+cd ..
+./page Anastasia_1997
+done 
