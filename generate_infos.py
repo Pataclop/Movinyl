@@ -4,9 +4,11 @@ from PIL import ImageDraw
 import textwrap
 import os
 import subprocess
-import pymdb
 import sys
-
+import tmdbsimple as tmdb
+import re
+tmdb.API_KEY = '38b045cf5307eaa109b937ba5047d015'
+tmdb.REQUESTS_TIMEOUT = 5  # seconds, for both connect and read
 
 def write_text_to_image(text, font, saveName, size):
     """[creates a black image with white text and writes it in the main folder]
@@ -40,16 +42,33 @@ raw = raw.replace("\"", "")
 word_list = raw.split()
 year = word_list[-1]
 length = len(raw)
-movie = raw[:length-4]
+movie_name = raw[:length-4]
+
+real = "bob"
+duration = '0'
+search = tmdb.Search()
+response = search.movie(query=movie_name)
+for s in search.results:
+    if (re.sub("[^\w]", " ",  s['release_date']).split()[0] == year) :
+        id = s['id']
+        m = tmdb.Movies(id)
+        response = m.info()
+        movie_name = m.original_title
+        duration = str(m.runtime) +"'"
+        response = m.credits()
+        for credit in m.crew :
+            if credit["job"] == "Director" :
+                real = credit['name']
+                break
+        break
 
 
-print(movie)
-m = pymdb.Movie(movie, year)
+
+
+print(movie_name)
 cleanYear = "("+year+")"
-duration = str(m.runtime()[0])+"'"
-real = m.director()[0]
 
-write_text_to_image(movie, 'futura medium bt.ttf', "titre.png", 200)
+write_text_to_image(movie_name, 'futura medium bt.ttf', "titre.png", 200)
 write_text_to_image(cleanYear, 'futura light bt.ttf', "année.png", 200)
 write_text_to_image(real, 'futura medium bt.ttf', "réalisateur.png", 170)
 write_text_to_image(duration, 'futura light bt.ttf', "durée.png", 150)
