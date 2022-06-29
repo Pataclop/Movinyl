@@ -3,12 +3,13 @@
 sudo apt install libopencv-dev -y
 sudo apt-get install build-essential -y
 sudo apt install npm -y
-sudo apt install python3-pip && sudo pip install pipenv
-sudo apt  install ffmpeg
-sudo apt install rename
-pip install -U scikit-learn
-pip install matplotlib
+sudo apt install python3-pip && sudo pip install pipenv -y
+sudo apt  install ffmpeg -y
+sudo apt install rename -y
+pip install -U scikit-learn -y
+pip install matplotlib -y
 
+pip install tmdbsimple -y
 
 
 
