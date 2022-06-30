@@ -1,19 +1,5 @@
-file=$1
-mkdir "${file%.*}"
-cd "${file%.*}"
-mv ../"${file}" .
-cp ../../page .
-cp ../../generate_infos.py .
-cp ../../*.ttf .
-convert -crop 150x3925+1950+50 "${file}" crop.png 
-extcolors crop.png -t 12 -l 8 > colors.txt
-python3 generate_infos.py "${file%.*}"
-rm colors.txt crop.png
-cp "${file}" ..
-./page "${file%.*}"
-rm année.png durée.png palette.png réalisateur.png titre.png *.ttf *.py page "${file}"
-mv *.png .. 
-cd ..
-rmdir "${file%.*}"
-rm "${file}"
-
+cd PAGE_ZONE
+for file in *
+do
+ ../3_assist "${file}" &
+done 
