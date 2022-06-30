@@ -6,10 +6,10 @@ sudo apt install npm -y
 sudo apt install python3-pip && sudo pip install pipenv -y
 sudo apt  install ffmpeg -y
 sudo apt install rename -y
-pip install -U scikit-learn -y
-pip install matplotlib -y
+pip install -U scikit-learn 
+pip install matplotlib 
 
-pip install tmdbsimple -y
+pip install tmdbsimple 
 
 
 
