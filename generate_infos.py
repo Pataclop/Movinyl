@@ -46,7 +46,7 @@ year = word_list[-1]
 length = len(raw)
 movie_name = raw[:length-4]
 
-real = "bob"
+real = " "
 duration = '0'
 search = tmdb.Search()
 response = search.movie(query=movie_name)
@@ -76,7 +76,7 @@ write_text_to_image(real, 'futura medium bt.ttf', "réalisateur.png", 170)
 write_text_to_image(duration, 'futura light bt.ttf', "durée.png", 150)
 H = 8000
 W = 5000
-file1 = open('PAGE_ZONE/colors.txt', 'r')
+file1 = open('colors.txt', 'r')
 Lines = file1.readlines()
 
 im = Image.new('RGB', (W, W//7), (0, 0, 0))
