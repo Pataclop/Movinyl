@@ -9,5 +9,7 @@ cd PAGE_ZONE
 rm colors.txt crop.png
 cp "${file}" ..
 cd ..
-./page Anastasia_1997
+./page "${file%.*}"
+rm "${file}"
+cd PAGE_ZONE
 done 
