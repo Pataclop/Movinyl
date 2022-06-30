@@ -32,16 +32,13 @@
 ## Table of Contents
 
 * [About the Project](#about-the-project)
-  * [Built With](#built-with)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
 * [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
-* [Acknowledgements](#acknowledgements)
 
 
 
@@ -53,13 +50,6 @@ Movinyl is a fun visualization project to capture the colors and spirit of a mov
 Take a look at what we're talking about
  
 ![Example Result](https://github.com/Pataclop/Movinyl/blob/master/example_img/3.jpg)
-
-
-### Built With
-* [Pymdb](https://github.com/dannyarcher/pymdb)
-* C++ and Python
-* [FFMPEG](https://ffmpeg.org)
-* [OpenMP](https://www.openmp.org)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -80,7 +70,7 @@ Everything required for the project is in the installation script within the rep
 3. Generate the disks (ressource intensive, go take a cup of wine)
 
 ```sh
-./6_BATCH
+./1_BATCH
 ```
 
 ### HOW TO CREATE A DISK - DOCKER 
@@ -100,20 +90,9 @@ docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 
 ### HOW TO CREATE A PAGE
 
-1. (Optional) Run the color picker GUI to select 5 colors for the movie poster
-
+Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING : They will be deleted. Expected format : title_year.png
 ```sh
-python3 run_interface.py
-```
-2. Move the disk images to the root of the project
-
-3. Run the make page script for a single video or for multiple videos 
-```sh
-./5_MAKE_PAGE -s movie_name r g b r g b r g b r g b r g b
-```
-or
-```sh
-./5_MAKE_PAGE -f info.txt
+./2_MAKE_PAGE
 ```
 
 <!-- ROADMAP -->
@@ -122,15 +101,19 @@ or
 See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of proposed features and known issues. Please feel free to add to our roadmap. 
 * Multithreading for pages.cpp
 * Reduce the number of scripts and instructions to make the experience more seamless
-* QRcode in pages
+* QRcode in pages 
+* opetions in page
+* planche rework
+* one script to do it all
 * FASTER!
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us!
+Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us at  project.movinyl@gmail.com!
 
-Do not hesitate to add your disks to this album, or send us your creations by mail ! (plus that would save us the time to re-process your movies)
+Do not hesitate to add your disks to this album, or send us your creations by mail or weTransfer or other. (that would save us the time to re-process some movies, and discover some others).
+Sharing is greatly appreciated. 
 [google photo album](https://photos.app.goo.gl/TtnD8yMPEKirk46R6)
 (4000x4000 pixels, PNG files)
 
