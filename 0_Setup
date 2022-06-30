@@ -8,7 +8,7 @@ sudo apt  install ffmpeg -y
 sudo apt install rename -y
 pip install -U scikit-learn 
 pip install matplotlib 
-
+pip install extcolors
 pip install tmdbsimple 
 
 
