@@ -11,5 +11,6 @@ cp "${file}" ..
 cd ..
 ./page "${file%.*}"
 rm "${file}"
+rm année.png durée.png palette.png réalisateur.png titre.png
 cd PAGE_ZONE
 done 
