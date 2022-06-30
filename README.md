@@ -22,15 +22,7 @@
 
   <p align="center">
     Capture the colors of your favorite movie!
-    <br />
-    <a href="https://github.com/Pataclop/Movinyl"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/Pataclop/Movinyl">View Demo</a>
-    ·
-    <a href="https://github.com/Pataclop/Movinyl/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/Pataclop/Movinyl/issues">Request Feature</a>
+
   </p>
 </p>
 
