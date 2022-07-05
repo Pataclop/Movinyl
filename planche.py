@@ -48,29 +48,25 @@ def quickSort(arr,low,high):
 
 
 
-def border(im, border_size):
+def border(border_size, im):
 	border_size=border_size+1
 	(l,h)=im.size
 	big= new('RGBA', (l+(2*border_size), (h+(2*border_size))), (0,0,0,255))
 	big.paste(im, (border_size, border_size))
 	return big
 
-def rotate (im, angle):
-	return  im.rotate(angle, expand=True)
-
-
 def faitou (im_number):
-	print("usage : python3 planche NumberOfDisks info.txt")
+	print("usage : python3 planche  info.txt   NumberOfDisks   width(in disks)   height(in disks)   disk_resolution(2000 is godo)")
 	f = open(sys.argv[2], "r")
 	lines = f.readlines()
 	f.close()
 	count=0
-	l=18
-	h=10
+	l=sys.argv[3]
+	h=sys.argv[4]
 	for planche in range (im_number//(l*h)+1):
 		planche_name = "planche" + str(planche) + ".png"
-		L=36000
-		H=20000
+		L=sys.argv[5]*l
+		H=sys.argv[5]*h
 		out= PIL.Image.new('RGBA', (L,H+H//50), (0,0,0,255)) 
 		positions=[0]*(2*l*h)
 		cmp = 0
@@ -94,6 +90,6 @@ def faitou (im_number):
 				count=count+1
 		out.save(planche_name)
 
-faitou (int(sys.argv[1]))
+faitou (int(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5])
 
 
