@@ -73,8 +73,14 @@ Everything required for the project is in the installation script within the rep
 ./1_BATCH
 ```
 
-### HOW TO CREATE A DISK - DOCKER 
-(slower, but you can use your computer while it is processing)
+### HOW TO CREATE A PAGE
+
+Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING : They will be deleted. Expected format : title_year.png
+```sh
+./2_MAKE_PAGE
+```
+
+### HOW TO CREATE A DISK - DOCKER (depreciated, please help if you have docker knowledge) 
 
 1. Build the docker stuff
 
@@ -88,12 +94,7 @@ sudo docker build -t movinyl .
 docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 ```
 
-### HOW TO CREATE A PAGE
 
-Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING : They will be deleted. Expected format : title_year.png
-```sh
-./2_MAKE_PAGE
-```
 
 <!-- ROADMAP -->
 ## Roadmap
