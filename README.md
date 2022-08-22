@@ -100,13 +100,10 @@ docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 ## Roadmap
 
 See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of proposed features and known issues. Please feel free to add to our roadmap. 
-* Multithreading for pages.cpp
-* Reduce the number of scripts and instructions to make the experience more seamless
 * QRcode in pages 
-* opetions in page
+* options in page
 * planche rework
-* one script to do it all
-* FASTER!
+* GO FASTER!
 
 <!-- CONTRIBUTING -->
 ## Contributing
