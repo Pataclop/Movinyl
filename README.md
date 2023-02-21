@@ -32,10 +32,7 @@
 ## Table of Contents
 
 * [About the Project](#about-the-project)
-* [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
 * [Usage](#usage)
-* [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [License](#license)
 * [Contact](#contact)
@@ -108,9 +105,7 @@ See the [open issues](https://github.com/Pataclop/Movinyl/issues) for a list of 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Any contributions you make are **greatly appreciated**. If you have any suggestions for our project or have coding experience and would like to join the project, please reach out to us at  project.movinyl@gmail.com!
-
-Do not hesitate to add your disks to this album, or send us your creations by mail or weTransfer or other. (that would save us the time to re-process some movies, and discover some others).
+Do not hesitate to add your disks to this album, or send us your creations by mail at project.movinyl@gmail.com or by any other mean. (that would save us the time to re-process some movies, and discover some others).
 Sharing is greatly appreciated. 
 [google photo album](https://photos.app.goo.gl/TtnD8yMPEKirk46R6)
 (4000x4000 pixels, PNG files)
