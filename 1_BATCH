@@ -1,48 +1,93 @@
 #!/bin/bash
 
+size=100
+
 cd PROCESSING_ZONE
 rename  's/[()]//g' *
 rename  's/[ :!]/_/g' *
-for file in *
-do
-mkdir "${file%.*}"
+for file in *; do
+  if [[ $file == *.mp4 || $file == *.mkv || $file == *.avi || \
+        $file == *.mov || $file == *.flv || $file == *.wmv || \
+        $file == *.webm || $file == *.mpg || $file == *.mpeg || \
+        $file == *.3gp || $file == *.ogv || $file == *.mts || \
+        $file == *.m2ts || $file == *.ts ]]; then
+    # Traitez le fichier ici
+    echo "Processing $file"
+
+rm -rf "${file%.*}" && mkdir "${file%.*}"
 mkdir "${file%.*}"/images
 len=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $file)
 
 echo "${file%.*}"
 echo "Extracting frames"
 
-r=$(echo "$len / 2005" | bc -l)
-for i in {0..2003}  
+
+
+# Fonction pour tuer tous les processus enfants
+cleanup() {
+    echo "Interruption détectée, arrêt des processus..."
+    pkill -P $$
+    exit 1
+}
+
+# Capturer Ctrl+C
+trap cleanup SIGINT
+
+
+
+# Calculer r en utilisant bc
+r=$(echo "scale=10; $len / ($size + 5)" | bc)
+
+for ((i=0; i<=$((size + 3)); i++))
 do  
-stamp=$(echo "$i * $r" | bc -l)
-echo -ne "$i /2000" '\r'
-ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp  -i  $file -vf "cropdetect=24:16:0" -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
+    # Calculer stamp en utilisant bc
+    stamp=$(echo "scale=10; $i * $r" | bc)
+    # Afficher la progression
+    echo -ne "$i / $size\r"
+    ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp  -i  $file -vf "cropdetect=24:16:0" -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
 done &
 
 
 number_of_processed_frames=$(ls "${file%.*}"/images | wc -l)
-while ((number_of_processed_frames<2000))
+while ((number_of_processed_frames<size))
 do 
 ((number_of_processed_frames=$(ls "${file%.*}"/images | wc -l)))
 done
 
 
-rm $file
+# créer les images potentiellement manquantes
+
+# Créer les images potentiellement manquantes
+for i in $(seq 0 $((size + 1)))
+do
+    if [ ! -f "${file%.*}/images/${i}.jpg" ]; then
+        prev=$((i - 1))
+        if [ $prev -ge 0 ] && [ -f "${file%.*}/images/${prev}.jpg" ]; then
+            cp "${file%.*}/images/${prev}.jpg" "${file%.*}/images/${i}.jpg"
+            echo "Créé ${i}.jpg à partir de ${prev}.jpg"
+        else
+            echo "Image de départ manquante pour créer ${i}.jpg"
+        fi
+    fi
+done
 
 
 cp ../disk  "${file%.*}"/
 cd ""${file%.*}""/
-num=$(ls -l images | egrep -c '^-')-2000
+num=$(ls -l images | egrep -c '^-')-$size
 echo "${num}"
-./disk 2000
+./disk $size
 cd ..
+fi
 done 
 
-for file in *
-do
-cd "${file}"/
-mv "save.png" "${file}.png"
-mv *.png ..
-cd ..
+for file in *; do
+  if [ -d "$file" ]; then
+    cd "$file" || exit
+    mv "save.png" "${file}.png"
+    mv *.png ..
+    cd ..
+  fi
 done
+
+
