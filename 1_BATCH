@@ -44,7 +44,7 @@ do
     stamp=$(echo "scale=10; $i * $r" | bc)
     # Afficher la progression
     echo -ne "$i / $size\r"
-    ffmpeg -y -nostdin -hide_banner -loglevel panic -accurate_seek -ss $stamp  -i  $file -vf "cropdetect=24:16:0" -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
+    ffmpeg -y -nostdin -threads 1 -hide_banner -loglevel panic -accurate_seek -ss $stamp  -i  $file -vf "cropdetect=24:16:0" -q:v 1  -frames:v 1 "${file%.*}"/images/$i.jpg &  
 done &
 
 
