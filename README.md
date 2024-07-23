@@ -62,9 +62,9 @@ Everything required for the project is in the installation script within the rep
 ```sh
 ./0_SETUP
 ```
-2. Put your movies in the PROCESSING_ZONE folder. WARNING : They will be deleted
+2. Put your movies or video files in the PROCESSING_ZONE folder.
 
-3. Generate the disks (ressource intensive, go take a cup of wine)
+3. Generate the disks (ressource intensive, might take some time)
 
 ```sh
 ./1_BATCH
@@ -72,15 +72,14 @@ Everything required for the project is in the installation script within the rep
 
 ### HOW TO CREATE A PAGE
 
-Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING : They will be deleted. Expected format : title_year.png
+Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING : They will be deleted. Expected movie format : title_year.png. must correspond to the IMDB database name and year.
 ```sh
 ./2_MAKE_PAGE
 ```
 
-### HOW TO CREATE A DISK - DOCKER (depreciated, please help if you have docker knowledge) 
+### DOCKER (depreciated, please help if you have docker knowledge) 
 
 1. Build the docker stuff
-
 
 ```sh
 sudo docker build -t movinyl .
