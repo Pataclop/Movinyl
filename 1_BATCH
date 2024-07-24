@@ -1,6 +1,6 @@
 #!/bin/bash
 
-size=100
+size=2000
 
 cd PROCESSING_ZONE
 rename  's/[()]//g' *
