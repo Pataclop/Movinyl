@@ -31,7 +31,10 @@ def list_all_video_files(directory):
         mime = magic.Magic(mime=True)
         real_file = os.readlink(file_path) if os.path.islink(file_path) else file_path
 
-        filename = mime.from_file(real_file)
+        try:
+            filename = mime.from_file(real_file)
+        except FileNotFoundError:
+            continue
         if not filename.startswith('video/'):
             continue
 
