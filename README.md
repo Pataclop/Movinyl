@@ -77,12 +77,12 @@ Put the 4000x4000px images that you generated in the PAGE_ZONE folder. WARNING :
 ./2_MAKE_PAGE
 ```
 
-### DOCKER (depreciated, please help if you have docker knowledge) 
+### DOCKER (not really supported, please help if you have docker knowledge) 
 
 1. Build the docker stuff
 
 ```sh
-sudo docker build -t movinyl .
+docker build -t movinyl .
 ```
 2. Generate the disks
 
@@ -90,6 +90,11 @@ sudo docker build -t movinyl .
 docker run -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 ```
 
+The image uses gosu so that the generated files belong to your user.
+
+By default it uses uid:gid = 1000:1000, if that's  not your case use the RUN_AS environment variable, with something like:
+
+docker run -e RUN_AS=$(id -u):$(id -g) -v path-with-video-files:/app/PROCESSING_ZONE movinyl disk
 
 
 <!-- ROADMAP -->

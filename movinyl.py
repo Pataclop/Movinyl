@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -11,32 +12,40 @@ import magic
 import tqdm
 from PIL import Image
 
-from color_picker import get_points, kmeans
-
 
 @click.group()
 def main():
     pass
 
 
-@main.command()
-@click.argument('dir', default="PROCESSING_ZONE")
-@click.option('--n', default=2000)
-def disk(dir, n):
-    files = os.listdir(dir)
+def list_all_video_files(directory):
+    files = os.listdir(directory)
     print(sys.argv)
     for file in files:
-        file_path = os.path.join(dir, file)
+        file_path = os.path.join(directory, file)
 
         print(file_path)
         if os.path.isdir(file_path):
             continue
 
         mime = magic.Magic(mime=True)
-        filename = mime.from_file(file_path)
+        real_file = os.readlink(file_path) if os.path.islink(file_path) else file_path
+
+        try:
+            filename = mime.from_file(real_file)
+        except FileNotFoundError:
+            continue
         if not filename.startswith('video/'):
             continue
 
+        yield file_path
+
+
+@main.command()
+@click.argument('directory', default="PROCESSING_ZONE")
+@click.option('-n', default=2000)
+def disk(directory, n):
+    for file_path in list_all_video_files(directory):
         video_length = subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of',
                                                 'default=noprint_wrappers=1:nokey=1', file_path])
         video_length = float(video_length)
@@ -96,48 +105,36 @@ def disk(dir, n):
 
 
 @main.command()
-@click.argument('dir', default="PROCESSING_ZONE")
-def page(dir):
-    files = os.listdir(dir)
-    for file in files:
-        file_path = os.path.join(dir, file)
-
-        if os.path.isdir(file_path):
-            continue
-
-        mime = magic.Magic(mime=True)
-        filename = mime.from_file(file_path)
-        if not filename.startswith('video/'):
-            continue
-
+@click.argument('directory', default="PROCESSING_ZONE")
+def page(directory):
+    for file_path in list_all_video_files(directory):
         file_without_ext, _ = os.path.splitext(file_path)
         name = basename(file_without_ext)
         name = name.replace(' ', '_')
         name = name.replace('-', '_')
         file_png = os.path.join(dirname(file_without_ext), f'{name}.png')
 
-        def colorz(filename, n=3):
-            img = Image.open(filename)
-            img.thumbnail((200, 200))
-            w, h = img.size
+        extcolors = ["extcolors", file_png, "-t", "12", "-l", "8"]
+        print(shlex.join(extcolors))
+        colors_txt = subprocess.check_output(extcolors)
+        open(os.path.join(directory, "colors.txt"), 'wb').write(colors_txt)
 
-            points = get_points(img)
-            clusters = kmeans(points, n, 1)
-            return [str(int(x)) for c in clusters for x in c.center.coords]
+        generate_infos = [sys.executable, os.path.join(os.getcwd(), 'generate_infos.py'), name]
+        print(shlex.join(generate_infos))
+        subprocess.check_output(generate_infos)
+        shutil.move('titre.png', os.path.join(directory, 'titre.png'))
+        shutil.move('année.png', os.path.join(directory, 'année.png'))
+        shutil.move('réalisateur.png', os.path.join(directory, 'réalisateur.png'))
+        shutil.move('durée.png', os.path.join(directory, 'durée.png'))
 
-        colors = colorz(file_png, 5)
-        popen = [os.path.join(os.getcwd(), 'src', 'page', 'page'), name] + colors
-        print(" ".join(popen))
-        subprocess.check_output([sys.executable, 'generate_infos.py', name])
-        shutil.move('titre.png', os.path.join(dir, 'titre.png'))
-        shutil.move('année.png', os.path.join(dir, 'année.png'))
-        shutil.move('réalisateur.png', os.path.join(dir, 'réalisateur.png'))
-        shutil.move('durée.png', os.path.join(dir, 'durée.png'))
-        subprocess.check_output(popen, cwd=dir)
-        os.remove(os.path.join(dir, 'titre.png'))
-        os.remove(os.path.join(dir, 'année.png'))
-        os.remove(os.path.join(dir, 'réalisateur.png'))
-        os.remove(os.path.join(dir, 'durée.png'))
+        run_page = [os.path.join(os.getcwd(), 'src', 'page', 'page'), name]
+        print(shlex.join(run_page))
+        subprocess.check_output(run_page, cwd=directory)
+        os.remove(os.path.join(directory, 'titre.png'))
+        os.remove(os.path.join(directory, 'année.png'))
+        os.remove(os.path.join(directory, 'réalisateur.png'))
+        os.remove(os.path.join(directory, 'durée.png'))
+        os.remove(os.path.join(directory, 'colors.txt'))
 
 
 if __name__ == '__main__':

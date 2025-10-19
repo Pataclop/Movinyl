@@ -1,14 +1,24 @@
-FROM ubuntu:20.04
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install tzdata
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y build-essential libopencv-dev python3-opencv ffmpeg bc
-
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND noninteractive PYTHONUNBUFFERED 1
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip
+      apt-get install -y \
+        tzdata \
+        build-essential \
+        libopencv-dev \
+        python3 \
+        ffmpeg \
+        bc \
+        python3-pip \
+        python3-venv \
+        libmagic1 \
+        libmagic-dev
+
+ENV VIRTUAL_ENV /opt/venv
+ENV PATH "$VIRTUAL_ENV/bin:$PATH"
+RUN python3 -m venv /opt/venv
 
 COPY requirements.txt .
+RUN which pip3
 RUN pip3 install -r requirements.txt
 
 # Install gosu
@@ -28,13 +38,11 @@ WORKDIR /app
 RUN mkdir PROCESSING_ZONE
 
 RUN cd src/disk && make
+RUN cd src/disk_mono && make
 RUN cd src/page && make
-RUN cd src/pymdb && python3 setup.py install
 
 COPY . /app
 
 RUN chown -R app:app /app
-
-ENV PYTHONUNBUFFERED 1
 
 ENTRYPOINT ["/app/docker-entrypoint.sh", "/app/movinyl.py"]
