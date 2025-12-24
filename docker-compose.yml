@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  movinyl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    container_name: movinyl
+    volumes:
+      # Mount input videos directory
+      - ./PROCESSING_ZONE:/app/PROCESSING_ZONE:rw
+      # Mount output pages directory
+      - ./PAGE_ZONE:/app/PAGE_ZONE:rw
+      # Optional: mount a directory with videos from host
+      - ${MOVIES_DIR:-./videos}:/app/videos:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    # Override default command if needed
+    command: python3 movinyl.py --help
+    # For interactive use
+    stdin_open: true
+    tty: true
+

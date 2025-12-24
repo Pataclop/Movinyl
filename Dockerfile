@@ -1,40 +1,66 @@
-FROM ubuntu:20.04
+# Multi-platform Dockerfile for Movinyl
+FROM --platform=$BUILDPLATFORM ubuntu:22.04 AS base
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install tzdata
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y build-essential libopencv-dev python3-opencv ffmpeg bc
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libopencv-dev \
+    python3-dev \
+    python3-opencv \
+    python3-pip \
+    ffmpeg \
+    bc \
+    imagemagick \
+    libmagickwand-dev \
+    pkg-config \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip
+# Create app user
+RUN useradd --create-home --shell /bin/bash app
 
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-
-# Install gosu
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y gosu; \
-	rm -rf /var/lib/apt/lists/*; \
-# verify that the binary works
-	gosu nobody true
-
-RUN useradd app
-
-COPY src /app/src
-
+# Set work directory
 WORKDIR /app
 
-RUN mkdir PROCESSING_ZONE
+# Copy and install Python requirements
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN cd src/disk && make
-RUN cd src/page && make
-RUN cd src/pymdb && python3 setup.py install
+# Install additional Python packages that might be missing
+RUN pip3 install --no-cache-dir \
+    scikit-learn \
+    matplotlib \
+    extcolors \
+    tmdbsimple
 
-COPY . /app
+# Copy source code
+COPY src/ src/
 
-RUN chown -R app:app /app
+# Build C++ programs
+RUN cd src/disk && make && cp disk /app/
+RUN cd src/page && make && cp page /app/
+RUN if [ -d "src/disk_mono" ]; then cd src/disk_mono && make && cp disk /app/disk_mono; fi
 
-ENV PYTHONUNBUFFERED 1
+# Copy application code
+COPY . /app/
 
-ENTRYPOINT ["/app/docker-entrypoint.sh", "/app/movinyl.py"]
+# Create necessary directories
+RUN mkdir -p PROCESSING_ZONE PAGE_ZONE && \
+    chown -R app:app /app
+
+# Switch to app user
+USER app
+
+# Health check
+HEALTH_CHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python3 --version || exit 1
+
+# Default command
+CMD ["python3", "movinyl.py", "--help"]

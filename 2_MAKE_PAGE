@@ -1,5 +1,49 @@
+#!/bin/bash
+
+# Movinyl Page Generation Script
+# Compatible with containerized environments
+
+set -e  # Exit on any error
+
+echo "Starting page generation..."
+
+# Check if we're in the right directory
+if [ ! -d "PAGE_ZONE" ]; then
+    echo "ERROR: PAGE_ZONE directory not found!"
+    echo "Please run this script from the Movinyl root directory."
+    exit 1
+fi
+
 cd PAGE_ZONE
-for file in *
-do
- ../3_assist "${file}" &
-done 
+
+# Check if there are files to process
+file_count=$(ls -1 | wc -l)
+if [ "$file_count" -eq 0 ]; then
+    echo "ERROR: No files found in PAGE_ZONE directory"
+    echo "Please add PNG files from disk generation to PAGE_ZONE first."
+    exit 1
+fi
+
+echo "Processing $file_count files..."
+
+# Function to check if file is a PNG
+is_png_file() {
+    local file="$1"
+    [[ "$file" == *.png ]] && [ -f "$file" ]
+}
+
+# Process each PNG file in parallel
+processed_count=0
+for file in *; do
+    if is_png_file "$file"; then
+        echo "Processing: $file"
+        ../3_assist "$file" &
+        ((processed_count++))
+    fi
+done
+
+# Wait for all background processes to complete
+wait
+
+echo "Page generation completed!"
+echo "Processed $processed_count files" 
