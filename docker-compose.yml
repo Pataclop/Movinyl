@@ -19,8 +19,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     working_dir: /app
-    # Override default command if needed
-    command: python3 movinyl.py --help
+    # Override with e.g. `disk` or `page` (ENTRYPOINT is `python3 -m movinyl`).
+    command: doctor
     # For interactive use
     stdin_open: true
     tty: true

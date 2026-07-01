@@ -1,6 +1,6 @@
-PyQt5
-PyQt5-stubs
-Pillow
-python-magic
-click
-ffpb
+# Movinyl Python dependencies (all pure-python or universal wheels -> install
+# cleanly on Linux, macOS and Windows with a plain `pip install`).
+rich>=13.0        # progress bars for the CLI
+textual>=0.40     # the interactive dashboard (TUI)
+Pillow>=10.0      # text/palette image generation
+tmdbsimple>=2.9   # movie metadata (title/director/runtime) for pages

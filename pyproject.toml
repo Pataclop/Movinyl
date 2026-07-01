@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "movinyl"
+version = "2.0.0"
+description = "Capture the colors of your favorite movie as a vinyl-like disk."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+dependencies = [
+    "rich>=13.0",
+    "textual>=0.40",
+    "Pillow>=10.0",
+    "tmdbsimple>=2.9",
+]
+
+[project.scripts]
+# After `pip install -e .` you get a plain `movinyl` command. Without installing,
+# everything also works through `python -m movinyl ...`.
+movinyl = "movinyl.cli:main"
+
+[tool.setuptools]
+packages = ["movinyl"]

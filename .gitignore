@@ -1,9 +1,19 @@
-PROCESSING_ZONE
-.DS_Store
-.DS_Store
+# Working zones (input videos / generated images)
+PROCESSING_ZONE/
+PAGE_ZONE/
+
+# Generated images and built C++ binaries
+*.png
 disk
 page
-pymdb
-*.png
+disk_mono
+build/
+
+# Python
+.venv/
+__pycache__/
 *.pyc
+*.egg-info/
+
+# OS
 .DS_Store

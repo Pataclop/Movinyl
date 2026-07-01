@@ -1,5 +1,6 @@
+# Legacy convenience build (Linux). Prefer src/CMakeLists.txt via `movinyl setup`.
 CC = g++
-CFLAGS = -g -Wall
+CFLAGS = -O3 -Wall
 SRCS =  page.cpp
 PROG = page
 

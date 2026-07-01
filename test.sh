@@ -67,8 +67,8 @@ test_build() {
 test_basic_functionality() {
     print_info "Testing basic container functionality..."
 
-    # Test help command
-    if docker run --rm movinyl:test python3 movinyl.py --help > /dev/null 2>&1; then
+    # Test help command (ENTRYPOINT is `python3 -m movinyl`)
+    if docker run --rm movinyl:test --help > /dev/null 2>&1; then
         print_success "Basic command execution works"
     else
         print_error "Basic command execution failed"
@@ -76,17 +76,17 @@ test_basic_functionality() {
     fi
 
     # Test that required tools are available
-    if docker run --rm movinyl:test which ffmpeg > /dev/null 2>&1; then
+    if docker run --rm --entrypoint which movinyl:test ffmpeg > /dev/null 2>&1; then
         print_success "FFmpeg is available in container"
     else
         print_error "FFmpeg is not available in container"
         return 1
     fi
 
-    if docker run --rm movinyl:test which convert > /dev/null 2>&1; then
-        print_success "ImageMagick is available in container"
+    if docker run --rm --entrypoint which movinyl:test cmake > /dev/null 2>&1; then
+        print_success "CMake is available in container"
     else
-        print_error "ImageMagick is not available in container"
+        print_error "CMake is not available in container"
         return 1
     fi
 
@@ -98,7 +98,7 @@ test_python_imports() {
     print_info "Testing Python dependencies..."
 
     # Test basic Python execution
-    if docker run --rm movinyl:test python3 -c "import cv2, PIL, numpy; print('Python dependencies OK')" > /dev/null 2>&1; then
+    if docker run --rm --entrypoint python3 movinyl:test -c "import PIL, rich, textual; print('ok')" > /dev/null 2>&1; then
         print_success "Python dependencies are working"
     else
         print_error "Python dependencies failed"
@@ -106,7 +106,7 @@ test_python_imports() {
     fi
 
     # Test movinyl imports
-    if docker run --rm movinyl:test python3 -c "from color_picker import get_points, kmeans; print('Movinyl imports OK')" > /dev/null 2>&1; then
+    if docker run --rm --entrypoint python3 movinyl:test -c "from movinyl import engine, palette, infos; print('ok')" > /dev/null 2>&1; then
         print_success "Movinyl Python modules import correctly"
     else
         print_error "Movinyl Python modules failed to import"
@@ -143,7 +143,7 @@ test_directory_setup() {
     mkdir -p test_processing test_page
 
     # Test volume mounting
-    if docker run --rm -v "$(pwd)/test_processing:/app/PROCESSING_ZONE" -v "$(pwd)/test_page:/app/PAGE_ZONE" movinyl:test ls -la /app/ | grep -q PROCESSING_ZONE; then
+    if docker run --rm --entrypoint ls -v "$(pwd)/test_processing:/app/PROCESSING_ZONE" -v "$(pwd)/test_page:/app/PAGE_ZONE" movinyl:test -la /app/ | grep -q PROCESSING_ZONE; then
         print_success "Volume mounting works"
     else
         print_error "Volume mounting failed"

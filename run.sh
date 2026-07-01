@@ -85,15 +85,15 @@ run_movinyl() {
     # Create necessary directories if they don't exist
     mkdir -p PROCESSING_ZONE PAGE_ZONE
 
-    print_info "Running: python3 movinyl.py $cmd"
+    print_info "Running: movinyl $cmd"
 
-    # Run the container with volume mounts
+    # Run the container with volume mounts (ENTRYPOINT is `python3 -m movinyl`).
     docker run --rm -it \
         -v "$(pwd)/PROCESSING_ZONE:/app/PROCESSING_ZONE:rw" \
         -v "$(pwd)/PAGE_ZONE:/app/PAGE_ZONE:rw" \
         -w /app \
         movinyl:latest \
-        python3 movinyl.py $cmd
+        $cmd
 }
 
 # Function to show usage
@@ -152,12 +152,11 @@ main() {
         "shell")
             ensure_image
             print_info "Starting interactive shell..."
-            docker run --rm -it \
+            docker run --rm -it --entrypoint bash \
                 -v "$(pwd)/PROCESSING_ZONE:/app/PROCESSING_ZONE:rw" \
                 -v "$(pwd)/PAGE_ZONE:/app/PAGE_ZONE:rw" \
                 -w /app \
-                movinyl:latest \
-                bash
+                movinyl:latest
             ;;
         "disk"|"page")
             ensure_image
