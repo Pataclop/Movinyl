@@ -112,6 +112,8 @@ def run_pyinstaller(icon: Optional[Path]) -> Path:
     ]
     for font in FONTS:
         cmd += ["--add-data", f"{ROOT / font}{os.pathsep}."]
+    if LOGO.is_file():  # window, taskbar and notification icon
+        cmd += ["--add-data", f"{LOGO}{os.pathsep}logos"]
     if icon:
         cmd += ["--icon", icon]
     run(cmd, cwd=ROOT)

@@ -2,6 +2,21 @@
 PROCESSING_ZONE/
 PAGE_ZONE/
 
+# Videos dropped anywhere in the project (multi-GB, never committed)
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.m4v
+*.webm
+*.wmv
+*.flv
+*.mpg
+*.mpeg
+*.m2ts
+*.mts
+*.vob
+
 # Film database (SQLite): data/movinyl.db is tracked, its scratch files are not
 *.db-journal
 *.db-wal
