@@ -161,6 +161,16 @@ def test_changed_video_rerenders(video, fake_render):
     assert fake_render == ["Inception_2010", "Inception_2010"]
 
 
+def test_run_disks_renders_only_the_given_videos(video, tmp_path, fake_render):
+    other = video.parent / "Other_Film_2001.mkv"
+    other.write_bytes(b"x")
+    out_dir = tmp_path / "disks"
+    assert engine.run_disks([other], out_dir, n=10) == [out_dir / "Other_Film_2001.png"]
+    assert fake_render == ["Other_Film_2001"]
+    assert engine.run_disks([other, video], out_dir, n=10)[-1].name == "Inception_2010.png"
+    assert fake_render == ["Other_Film_2001", "Inception_2010"]  # done one skipped
+
+
 def test_existing_disk_is_adopted(video, fake_render):
     (video.parent / "Inception_2010.png").write_bytes(b"png")
     disk(video, video.parent)

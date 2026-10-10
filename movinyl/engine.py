@@ -382,11 +382,31 @@ def run_disk_batch(
     tmdb_key: Optional[str] = None,
 ) -> List[Path]:
     """Render disks for every video in ``input_dir`` (sequentially)."""
-    reporter = reporter or Reporter()
     videos = discover_videos(input_dir)
     if not videos:
         raise MovinylError(f"No video files found in {input_dir}")
+    return run_disks(videos, input_dir, n, reporter, cancel, overwrite,
+                     keep_frames, low_priority, mean_colors, tmdb_key)
 
+
+def run_disks(
+    videos: List[Path],
+    output_dir: Path,
+    n: int = DEFAULT_FRAME_COUNT,
+    reporter: Optional[Reporter] = None,
+    cancel: Optional[threading.Event] = None,
+    overwrite: bool = False,
+    keep_frames: bool = False,
+    low_priority: bool = True,
+    mean_colors: bool = False,
+    tmdb_key: Optional[str] = None,
+) -> List[Path]:
+    """Render a disk for each of ``videos`` into ``output_dir`` (sequentially).
+
+    Films already processed are skipped unless ``overwrite`` is set, exactly as
+    in :func:`run_disk_batch`.
+    """
+    reporter = reporter or Reporter()
     reporter.task("overall", "Disks", total=len(videos))
     outputs: List[Path] = []
     for video in videos:
@@ -394,7 +414,7 @@ def run_disk_batch(
             break
         try:
             result = generate_disk_for_video(
-                video, n, input_dir, reporter, cancel,
+                video, n, output_dir, reporter, cancel,
                 overwrite, keep_frames, low_priority, mean_colors, tmdb_key,
             )
             if result is not None:
