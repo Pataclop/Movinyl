@@ -132,10 +132,24 @@ Drop videos in `PROCESSING_ZONE`, then use the on-screen buttons or shortcuts:
 | **p** | Build pages from the disks |
 | **a** | Assemble contact sheets (planche) |
 | **s** | Setup / build the C++ renderers |
+| **o** | Toggle re-processing of films already done |
 | **c** | Cancel the running job |
 | **q** | Quit |
 
-Live progress bars, a file list and clean cancellation are built in.
+Live progress bars, a file list and clean cancellation are built in. Films
+already processed are marked **✓** and skipped unless re-processing is on.
+
+### The desktop window
+
+Prefer a regular window? The PyQt6 GUI does the same, and lets you pick the
+video and disk folders with a file browser:
+
+```sh
+python3 -m movinyl gui
+```
+
+PyQt6 is optional: the setup scripts install it (`requirements-gui.txt`), or run
+`pip install -r requirements-gui.txt` yourself. It is left out of the Docker image.
 
 ### The command line
 
@@ -173,15 +187,59 @@ Tuning is done via command-line flags (not env vars):
 |------|---------|:-------:|-------------|
 | `--n` | `disk` | `2000` | Frames per video (= rings on the disk). |
 | `--max-height` | `disk` | `1080` | Cap frame resolution. Sources are **never upscaled**; each frame only paints a 1px ring, so this trades wasted decode/I-O for speed. Use `0` to keep full resolution. |
-| `--overwrite` | `disk` | off | Re-render disks that already exist. |
+| `--overwrite` | `disk`, `page` | off | Re-render films already processed (existing file or recorded in the history). |
 | `--keep-frames` | `disk` | off | Keep the extracted frames instead of cleaning them up. |
 | `--jobs` | `page` | CPU count | Number of parallel page workers. |
 | `--leave-cores` | `page` | `0` | Keep N cores free so the machine stays responsive. |
-| `--tmdb-key` | `page` | bundled | Override the TMDB API key. |
+| `--tmdb-key` | `disk`, `page` | bundled | Override the TMDB API key. |
+
+Movinyl keeps a SQLite database of the films it processed (`data/movinyl.db`,
+tracked by git; override with the `MOVINYL_DB` env var). It has two tables:
+
+| Table | Content |
+|-------|---------|
+| `films` | One row per film: internal `id`, unique **`tmdb_id`** (NULL if the film isn't found on TMDB), file `name`, title, original title, year, director, runtime, and the disk/page processing state. |
+| `mean_color` | `(film_id, frame, r, g, b)`: the **mean color of every sampled frame** (frame 1 = start of the movie), filled by the `disk` stage. |
+
+The colors are enough to redraw a film without its video — as a classic movie
+barcode or as a disk of flat rings:
+
+```bash
+python -m movinyl redraw Inception_2010                       # Inception_2010_barcode.png
+python -m movinyl redraw Inception_2010 --style disk --size 2000
+```
+
+Already-processed films are skipped even if their PNG was moved elsewhere. Two
+things re-process a film automatically:
+
+- **a new video file** with the same name but a different size (e.g. a better copy);
+- **a re-rendered disk**: its page is invalidated and rebuilt by the next `page` run.
+
+Inspect or reset the history with:
+
+```bash
+python -m movinyl history                  # list films (tmdb id, stages, colors)
+python -m movinyl history --forget Inception_2010
+python -m movinyl history --clear
+./run.sh history                           # same, through Docker (uses ./data)
+```
 
 The optional **TMDB API key** (for title/director/runtime) can also be set via the
 `TMDB_API_KEY` environment variable — see [`env.example`](env.example). A working
 default is bundled, so it's optional.
+
+---
+
+## 🧪 Tests
+
+```sh
+pip install pytest
+python -m pytest tests
+```
+
+The tests cover the database (films, TMDB ids, mean colors, migration), the
+redraw and the skip / re-process rules. They don't need
+ffmpeg, the C++ renderers or network access.
 
 ---
 

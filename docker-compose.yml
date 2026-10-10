@@ -14,6 +14,8 @@ services:
       - ./PROCESSING_ZONE:/app/PROCESSING_ZONE:rw
       # Mount output pages directory
       - ./PAGE_ZONE:/app/PAGE_ZONE:rw
+      # Processed-films history (SQLite)
+      - ./data:/app/data:rw
       # Optional: mount a directory with videos from host
       - ${MOVIES_DIR:-./videos}:/app/videos:ro
     environment:

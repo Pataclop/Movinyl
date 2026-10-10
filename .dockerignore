@@ -63,6 +63,7 @@ src/disk_mono/disk
 # Processing directories (will be mounted as volumes)
 PROCESSING_ZONE/
 PAGE_ZONE/
+data/
 
 # Documentation
 README.md.old

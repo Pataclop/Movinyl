@@ -8,13 +8,26 @@ from __future__ import annotations
 import os
 import platform
 import shutil
+import sys
 from pathlib import Path
 from typing import List, Optional
 
-# Repository root = parent of the ``movinyl`` package directory.
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# True when running from the PyInstaller bundle (see scripts/build_exe.py).
+FROZEN = bool(getattr(sys, "frozen", False))
+
+if FROZEN:
+    # Writable data (zones, database) and the bundled ``bin/`` live next to the
+    # .exe; read-only resources (fonts) are unpacked by PyInstaller.
+    PROJECT_ROOT = Path(sys.executable).resolve().parent
+    RESOURCE_ROOT = Path(getattr(sys, "_MEIPASS", PROJECT_ROOT))
+else:
+    # Repository root = parent of the ``movinyl`` package directory.
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    RESOURCE_ROOT = PROJECT_ROOT
 
 BUILD_DIR = PROJECT_ROOT / "build"
+# Bundled executables (disk, page, ffmpeg, ffprobe + DLLs) in the .exe build.
+BUNDLED_BIN = PROJECT_ROOT / "bin"
 
 # Video container extensions we accept as input (lower-case, no dot).
 VIDEO_EXTENSIONS = {
@@ -55,7 +68,10 @@ def default_jobs(leave_cores: int = 0) -> int:
 
 
 def which(name: str) -> Optional[str]:
-    """Locate an executable on PATH (cross-platform ``which``)."""
+    """Locate an executable: bundled ``bin/`` first, then PATH."""
+    bundled = BUNDLED_BIN / f"{name}{exe_suffix()}"
+    if bundled.is_file():
+        return str(bundled)
     return shutil.which(name)
 
 
@@ -63,6 +79,7 @@ def _candidate_binaries(name: str) -> List[Path]:
     suffix = exe_suffix()
     stem = f"{name}{suffix}"
     return [
+        BUNDLED_BIN / stem,                        # .exe bundle
         BUILD_DIR / stem,
         BUILD_DIR / "Release" / stem,
         BUILD_DIR / "Debug" / stem,

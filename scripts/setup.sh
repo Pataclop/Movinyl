@@ -26,7 +26,7 @@ VPY="$VENV/bin/python"
 
 echo "Installing Python dependencies ..."
 "$VPY" -m pip install --upgrade pip >/dev/null
-"$VPY" -m pip install -r requirements.txt
+"$VPY" -m pip install -r requirements-gui.txt
 
 # Build the C++ renderers and create the working zones (deps already handled).
 "$VPY" -m movinyl setup --no-python "$@"

@@ -29,7 +29,7 @@ if (-not $env:VCPKG_ROOT) {
 
 Write-Host "Installing Python dependencies ..."
 & $vpy -m pip install --upgrade pip | Out-Null
-& $vpy -m pip install -r requirements.txt
+& $vpy -m pip install -r requirements-gui.txt
 
 & $vpy -m movinyl setup --no-python @args
 

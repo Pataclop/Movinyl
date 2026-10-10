@@ -4,3 +4,4 @@ rich>=13.0        # progress bars for the CLI
 textual>=0.40     # the interactive dashboard (TUI)
 Pillow>=10.0      # text/palette image generation
 tmdbsimple>=2.9   # movie metadata (title/director/runtime) for pages
+# The desktop window (PyQt6) is optional: see requirements-gui.txt.

@@ -83,7 +83,7 @@ run_movinyl() {
     local cmd="$@"
 
     # Create necessary directories if they don't exist
-    mkdir -p PROCESSING_ZONE PAGE_ZONE
+    mkdir -p PROCESSING_ZONE PAGE_ZONE data
 
     print_info "Running: movinyl $cmd"
 
@@ -91,6 +91,7 @@ run_movinyl() {
     docker run --rm -it \
         -v "$(pwd)/PROCESSING_ZONE:/app/PROCESSING_ZONE:rw" \
         -v "$(pwd)/PAGE_ZONE:/app/PAGE_ZONE:rw" \
+        -v "$(pwd)/data:/app/data:rw" \
         -w /app \
         movinyl:latest \
         $cmd
@@ -107,6 +108,7 @@ USAGE:
 COMMANDS:
     disk [DIR]     Generate disks from videos in directory (default: PROCESSING_ZONE)
     page [DIR]     Generate pages from disk images in directory (default: PROCESSING_ZONE)
+    history        List films already processed (stored in data/movinyl.db)
     build          Build the Docker image
     shell          Start an interactive shell in the container
     help           Show this help message
@@ -151,14 +153,16 @@ main() {
             ;;
         "shell")
             ensure_image
+            mkdir -p PROCESSING_ZONE PAGE_ZONE data
             print_info "Starting interactive shell..."
             docker run --rm -it --entrypoint bash \
                 -v "$(pwd)/PROCESSING_ZONE:/app/PROCESSING_ZONE:rw" \
                 -v "$(pwd)/PAGE_ZONE:/app/PAGE_ZONE:rw" \
+                -v "$(pwd)/data:/app/data:rw" \
                 -w /app \
                 movinyl:latest
             ;;
-        "disk"|"page")
+        "disk"|"page"|"history")
             ensure_image
             shift
             run_movinyl "$@"

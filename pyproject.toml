@@ -16,6 +16,11 @@ dependencies = [
     "tmdbsimple>=2.9",
 ]
 
+[project.optional-dependencies]
+# Desktop window (`movinyl gui`): pip install "movinyl[gui]"
+gui = ["PyQt6>=6.4"]
+test = ["pytest>=7"]
+
 [project.scripts]
 # After `pip install -e .` you get a plain `movinyl` command. Without installing,
 # everything also works through `python -m movinyl ...`.

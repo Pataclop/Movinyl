@@ -16,7 +16,7 @@ from .progress import Reporter
 
 
 def _font(size: int) -> ImageFont.ImageFont:
-    path = pf.PROJECT_ROOT / "futura medium bt.ttf"
+    path = pf.RESOURCE_ROOT / "futura medium bt.ttf"
     try:
         return ImageFont.truetype(str(path), size)
     except (OSError, IOError):

@@ -23,6 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Callable, List, Optional
 
+from . import history
 from . import platforminfo as pf
 from .progress import Reporter
 
@@ -95,19 +96,22 @@ def ffprobe_duration(video: Path) -> float:
         out = subprocess.check_output(
             [ffprobe, "-v", "error", "-show_entries", "format=duration",
              "-of", "default=noprint_wrappers=1:nokey=1", str(video)],
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.STDOUT, **_child_kwargs(False),
         )
         return float(out.strip())
     except (subprocess.CalledProcessError, ValueError) as exc:
         raise MovinylError(f"Could not read duration of {video.name}: {exc}")
 
 
-def _low_priority_kwargs() -> dict:
-    """subprocess kwargs that run children at a lower scheduling priority."""
+def _child_kwargs(low_priority: bool) -> dict:
+    """subprocess kwargs: optionally lower priority; never pop a console window."""
     if pf.is_windows():
-        # 0x00004000 == BELOW_NORMAL_PRIORITY_CLASS
-        return {"creationflags": 0x00004000}
-    return {"preexec_fn": lambda: os.nice(10)}  # POSIX only
+        # 0x08000000 == CREATE_NO_WINDOW (no console flash from the GUI / .exe)
+        flags = 0x08000000
+        if low_priority:
+            flags |= 0x00004000  # BELOW_NORMAL_PRIORITY_CLASS
+        return {"creationflags": flags}
+    return {"preexec_fn": lambda: os.nice(10)} if low_priority else {}  # POSIX only
 
 
 def _stream_process(
@@ -179,7 +183,7 @@ def extract_frames(
 
     proc = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-        **_low_priority_kwargs() if low_priority else {},
+        **_child_kwargs(low_priority),
     )
 
     def handle(line: str) -> None:
@@ -244,7 +248,7 @@ def render_disk(
     proc = subprocess.Popen(
         [str(binary), str(n)], cwd=str(work_dir),
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-        **_low_priority_kwargs() if low_priority else {},
+        **_child_kwargs(low_priority),
     )
 
     missing = 0
@@ -280,13 +284,26 @@ def generate_disk_for_video(
     keep_frames: bool = False,
     low_priority: bool = True,
     max_height: int = DEFAULT_MAX_HEIGHT,
+    tmdb_key: Optional[str] = None,
 ) -> Optional[Path]:
-    """Full per-video pipeline: extract -> normalize -> render -> place PNG."""
+    """Full per-video pipeline: extract -> normalize -> mean colors -> render
+    -> place PNG, then record the film (TMDB metadata + colors) in the database."""
     name = sanitize_name(video.stem)
     output = output_dir / f"{name}.png"
+    if not overwrite and history.video_changed(name, video):
+        reporter.log(f"video changed since last run, re-processing: {name}")
+        overwrite = True
     if output.exists() and not overwrite:
         reporter.log(f"skip (exists): {output.name}")
+        if not history.disk_done(name):
+            # Adopt a disk made outside Movinyl's history: its settings are
+            # unknown and any recorded page still matches it.
+            history.record_disk(name, video, None, None, output, reset_page=False)
         return output
+    if history.disk_done(name) and not overwrite:
+        # The PNG may have been moved (e.g. to PAGE_ZONE): trust the history.
+        reporter.log(f"skip (already processed): {name}")
+        return None
 
     work_dir = output_dir / f"{name}.movinyl_work"
     images_dir = work_dir / "images"
@@ -299,9 +316,12 @@ def generate_disk_for_video(
         if cancel is not None and cancel.is_set():
             return None
         normalize_frame_count(images_dir, n)
+        colors = _mean_colors(images_dir, n)
         save = render_disk(work_dir, n, reporter, "disk", cancel, low_priority)
         output.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(save), str(output))
+        history.record_disk(name, video, n, max_height, output, colors=colors)
+        _record_info(name, tmdb_key, reporter)
         reporter.log(f"disk ready: {output.name}")
         return output
     finally:
@@ -309,6 +329,24 @@ def generate_disk_for_video(
         reporter.remove("disk")
         if not keep_frames:
             shutil.rmtree(work_dir, ignore_errors=True)
+
+
+def _mean_colors(images_dir: Path, n: int) -> list:
+    from .palette import frame_mean_colors  # local import: Pillow
+    return frame_mean_colors(images_dir, n)
+
+
+def _record_info(name: str, tmdb_key: Optional[str], reporter: Reporter) -> None:
+    """Store the film's TMDB metadata and id, unless it is already known."""
+    from . import tmdb
+    film = history.get(name)
+    if film is not None and film.tmdb_id is not None:
+        return
+    info = tmdb.lookup_name(name, tmdb_key)
+    if info is None:
+        reporter.log(f"[warn] {name}: not found on TMDB (no metadata stored)")
+    else:
+        history.record_info(name, info)
 
 
 def run_disk_batch(
@@ -320,6 +358,7 @@ def run_disk_batch(
     keep_frames: bool = False,
     low_priority: bool = True,
     max_height: int = DEFAULT_MAX_HEIGHT,
+    tmdb_key: Optional[str] = None,
 ) -> List[Path]:
     """Render disks for every video in ``input_dir`` (sequentially)."""
     reporter = reporter or Reporter()
@@ -335,7 +374,7 @@ def run_disk_batch(
         try:
             result = generate_disk_for_video(
                 video, n, input_dir, reporter, cancel,
-                overwrite, keep_frames, low_priority, max_height,
+                overwrite, keep_frames, low_priority, max_height, tmdb_key,
             )
             if result is not None:
                 outputs.append(result)
@@ -376,7 +415,7 @@ def generate_page_for_disk(
         proc = subprocess.Popen(
             [str(binary), name], cwd=str(work_dir),
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-            **_low_priority_kwargs() if low_priority else {},
+            **_child_kwargs(low_priority),
         )
         out, _ = proc.communicate()
         if proc.returncode != 0:
@@ -388,6 +427,7 @@ def generate_page_for_disk(
         output_dir.mkdir(parents=True, exist_ok=True)
         final = output_dir / f"{name}_page.png"
         shutil.move(str(produced), str(final))
+        history.record_page(name, final)
         return final
     finally:
         shutil.rmtree(work_dir, ignore_errors=True)
@@ -401,13 +441,25 @@ def run_page_batch(
     cancel: Optional[threading.Event] = None,
     tmdb_key: Optional[str] = None,
     low_priority: bool = True,
+    overwrite: bool = False,
 ) -> List[Path]:
-    """Compose pages for every disk PNG, using a *bounded* worker pool."""
+    """Compose pages for every disk PNG, using a *bounded* worker pool.
+
+    Films whose page is already recorded in the history are skipped unless
+    ``overwrite`` is set.
+    """
     reporter = reporter or Reporter()
     output_dir = output_dir or input_dir
     disks = discover_disks(input_dir)
     if not disks:
         raise MovinylError(f"No disk PNGs found in {input_dir}")
+    if not overwrite:
+        done = [d for d in disks if history.page_done(d.stem)]
+        for d in done:
+            reporter.log(f"skip (already processed): {d.stem}")
+        disks = [d for d in disks if d not in done]
+        if not disks:
+            return []
 
     jobs = max(1, jobs or pf.default_jobs())
     reporter.task("overall", f"Pages (x{jobs})", total=len(disks))

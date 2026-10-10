@@ -1,0 +1,4 @@
+# Everything in requirements.txt, plus the optional desktop window (`movinyl gui`).
+# Not installed in the Docker image, which has no display.
+-r requirements.txt
+PyQt6>=6.4        # the desktop window (GUI)

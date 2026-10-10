@@ -1,8 +1,8 @@
 """Generate the per-movie page assets: title/year/director/duration + palette.
 
 Refactored from the old ``generate_infos.py``:
-  * the TMDB API key is read from ``$TMDB_API_KEY`` (the historical key remains the
-    out-of-the-box default so nothing breaks),
+  * film metadata comes from the database (filled by the disk stage); TMDB is
+    only queried (see :mod:`movinyl.tmdb`) when the film is not known yet,
   * network lookups never crash the pipeline -- on any failure we fall back to the
     filename-derived title/year and leave the rest blank,
   * asset filenames are ASCII (``title.png`` ...) for cross-platform reliability,
@@ -10,25 +10,22 @@ Refactored from the old ``generate_infos.py``:
 """
 from __future__ import annotations
 
-import os
 import textwrap
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
+from . import history, tmdb
 from . import platforminfo as pf
 from .palette import RGB, extract_palette
-
-# Historical default key; override with the TMDB_API_KEY environment variable.
-_DEFAULT_TMDB_KEY = "38b045cf5307eaa109b937ba5047d015"
 
 ASSET_HEIGHT = 600  # page.cpp copies title/year/... into fixed-height 600px slots
 
 
 def _font(filename: str, size: int) -> ImageFont.FreeTypeFont:
     """Load a bundled TrueType font, falling back to Pillow's default."""
-    path = pf.PROJECT_ROOT / filename
+    path = pf.RESOURCE_ROOT / filename
     try:
         return ImageFont.truetype(str(path), size)
     except (OSError, IOError):
@@ -74,42 +71,18 @@ def _draw_palette(colors: List[RGB], width: int, out_path: Path) -> None:
     img.save(out_path)
 
 
-def _parse_name(name: str) -> Tuple[str, str]:
-    """Split a sanitized ``Title_Words_YEAR`` stem into (title, year)."""
-    words = name.replace("_", " ").replace("-", " ").split()
-    if len(words) >= 2 and words[-1].isdigit():
-        return " ".join(words[:-1]), words[-1]
-    return " ".join(words) or name, ""
-
-
-def _lookup_tmdb(title: str, year: str, api_key: str) -> Tuple[str, str, str]:
-    """Return (display_title, director, duration). Never raises."""
-    display_title, director, duration = title, "", ""
-    try:
-        import tmdbsimple as tmdb  # optional dependency
-
-        tmdb.API_KEY = api_key
-        tmdb.REQUESTS_TIMEOUT = 5
-        search = tmdb.Search()
-        search.movie(query=title)
-        for result in search.results or []:
-            release = (result.get("release_date") or "")[:4]
-            if year and release != year:
-                continue
-            movie = tmdb.Movies(result["id"])
-            info = movie.info()
-            display_title = info.get("original_title") or info.get("title") or title
-            if info.get("runtime"):
-                duration = f"{info['runtime']}'"
-            movie.credits()
-            for credit in movie.crew or []:
-                if credit.get("job") == "Director":
-                    director = credit.get("name", "")
-                    break
-            break
-    except Exception:  # noqa: BLE001 - network/key/parse issues must not be fatal
-        pass
-    return display_title, director, duration
+def film_info(name: str, tmdb_key: Optional[str] = None) -> history.MovieInfo:
+    """Metadata for ``name``: from the database, else TMDB (then stored)."""
+    film = history.get(name)
+    if film is not None and film.tmdb_id is not None:
+        return history.MovieInfo(film.tmdb_id, film.title, film.original_title,
+                                 film.year, film.director, film.runtime)
+    info = tmdb.lookup_name(name, tmdb_key)
+    if info is not None:
+        history.record_info(name, info)
+        return info
+    title, year = tmdb.parse_name(name)
+    return history.MovieInfo(title=title, year=int(year) if year else None)
 
 
 def generate_assets(
@@ -120,10 +93,11 @@ def generate_assets(
 ) -> None:
     """Write title/year/director/duration/palette PNGs into ``out_dir``."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    api_key = tmdb_key or os.environ.get("TMDB_API_KEY") or _DEFAULT_TMDB_KEY
-
-    title, year = _parse_name(name)
-    display_title, director, duration = _lookup_tmdb(title, year, api_key)
+    info = film_info(name, tmdb_key)
+    display_title = info.original_title or info.title or name
+    year = str(info.year) if info.year else ""
+    director = info.director or ""
+    duration = f"{info.runtime}'" if info.runtime else ""
 
     with Image.open(disk_png) as disk:
         disk_w = disk.size[0]

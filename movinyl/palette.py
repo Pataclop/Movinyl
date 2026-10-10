@@ -5,10 +5,11 @@ single, dependency-light, fully reproducible Pillow median-cut quantization.
 """
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import List, Tuple
 
-from PIL import Image
+from PIL import Image, ImageStat
 
 RGB = Tuple[int, int, int]
 
@@ -49,3 +50,30 @@ def extract_palette(image_path: Path, k: int = 7) -> List[RGB]:
     # Most frequent first; tie-break on the color value for a stable order.
     colors.sort(key=lambda c: (-c[0], c[1]))
     return [rgb for _, rgb in colors[:k]]
+
+
+def frame_mean_color(path: Path) -> RGB:
+    """Mean color of one extracted frame.
+
+    JPEG ``draft`` mode lets libjpeg decode at 1/8 scale straight from the DCT
+    coefficients, which is several times faster and averages to the same color
+    (to within rounding) as the full-resolution frame. An unreadable frame is
+    black, like the blank ring the disk renderer leaves for it.
+    """
+    try:
+        with Image.open(path) as raw:
+            raw.draft("RGB", (max(1, raw.width // 8), max(1, raw.height // 8)))
+            mean = ImageStat.Stat(raw.convert("RGB")).mean
+    except OSError:
+        return (0, 0, 0)
+    return (round(mean[0]), round(mean[1]), round(mean[2]))
+
+
+def frame_mean_colors(images_dir: Path, n: int, jobs: int = 0) -> List[RGB]:
+    """Mean colors of frames ``1.jpg .. n.jpg`` in movie order.
+
+    Decoding releases the GIL, so a thread pool scales across cores.
+    """
+    paths = [images_dir / f"{i}.jpg" for i in range(1, n + 1)]
+    with ThreadPoolExecutor(max_workers=jobs or None) as pool:
+        return list(pool.map(frame_mean_color, paths))

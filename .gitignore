@@ -2,12 +2,18 @@
 PROCESSING_ZONE/
 PAGE_ZONE/
 
+# Film database (SQLite): data/movinyl.db is tracked, its scratch files are not
+*.db-journal
+*.db-wal
+*.db-shm
+
 # Generated images and built C++ binaries
 *.png
 disk
 page
 disk_mono
 build/
+dist/
 
 # Python
 .venv/

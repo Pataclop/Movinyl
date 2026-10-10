@@ -30,7 +30,28 @@ def _cxx_compiler() -> Optional[str]:
     for cc in ("c++", "g++", "clang++", "cl"):
         if pf.which(cc):
             return cc
+    # cl.exe is only on PATH in a VS developer prompt, but CMake's Visual Studio
+    # generator finds an installed MSVC on its own.
+    if pf.is_windows() and _msvc_installed():
+        return "MSVC (Visual Studio)"
     return None
+
+
+def _msvc_installed() -> bool:
+    root = os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")
+    vswhere = Path(root) / "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
+    if not vswhere.is_file():
+        return False
+    try:
+        out = subprocess.run(
+            [str(vswhere), "-products", "*", "-requires",
+             "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+             "-property", "installationPath"],
+            capture_output=True, text=True,
+        )
+    except OSError:
+        return False
+    return bool(out.stdout.strip())
 
 
 def _opencv_present() -> bool:
@@ -93,6 +114,10 @@ def doctor() -> List[Check]:
         checks.append(Check(f"python:{mod}", "ok" if ok else "warn",
                             "installed" if ok else "missing",
                             None if ok else f"pip install {pip_name}"))
+    ok = _module_present("PyQt6")
+    checks.append(Check("python:PyQt6 (gui)", "ok" if ok else "warn",
+                        "installed" if ok else "missing (optional)",
+                        None if ok else "pip install -r requirements-gui.txt"))
 
     return checks
 
@@ -116,6 +141,11 @@ def _cmake_configure_args() -> List[str]:
     args = ["-S", str(pf.PROJECT_ROOT / "src"), "-B", str(pf.BUILD_DIR),
             "-DCMAKE_BUILD_TYPE=Release"]
 
+    # Prebuilt OpenCV (e.g. the official Windows package): OpenCV_DIR=C:/opencv/build
+    opencv_dir = os.environ.get("OpenCV_DIR")
+    if opencv_dir:
+        args.append(f"-DOpenCV_DIR={opencv_dir}")
+
     # On Windows, wire up a vcpkg toolchain automatically if VCPKG_ROOT is set.
     vcpkg = os.environ.get("VCPKG_ROOT")
     if vcpkg:
@@ -133,6 +163,16 @@ def _cmake_configure_args() -> List[str]:
         if libomp:
             args.append(f"-DOpenMP_ROOT={libomp}")
     return args
+
+
+def _opencv_runtime_dlls() -> List[Path]:
+    """Release DLLs of a prebuilt OpenCV (``OpenCV_DIR``) the renderers load on Windows."""
+    opencv_dir = os.environ.get("OpenCV_DIR")
+    if not pf.is_windows() or not opencv_dir:
+        return []
+    # opencv_world4140.dll, not the debug opencv_world4140d.dll
+    return [p for p in Path(opencv_dir).rglob("opencv_world*.dll")
+            if not p.stem.endswith("d")]
 
 
 def build_cpp(log=print) -> None:
@@ -157,6 +197,10 @@ def build_cpp(log=print) -> None:
     missing = [n for n in ("disk", "page") if pf.find_binary(n) is None]
     if missing:
         raise RuntimeError(f"Build finished but binaries missing: {', '.join(missing)}")
+    # vcpkg copies its DLLs next to the binaries; a prebuilt OpenCV does not.
+    for dll in _opencv_runtime_dlls():
+        for name in ("disk", "page"):
+            shutil.copy2(dll, pf.find_binary(name).parent / dll.name)
     log("Build OK: " + ", ".join(str(pf.find_binary(n)) for n in ("disk", "page")))
 
 

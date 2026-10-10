@@ -20,7 +20,7 @@ try:  # widget was renamed across Textual versions
 except ImportError:  # pragma: no cover
     from textual.widgets import TextLog as _LogWidget  # type: ignore
 
-from . import bootstrap, engine
+from . import bootstrap, engine, history
 from . import platforminfo as pf
 from .progress import Reporter
 
@@ -113,6 +113,7 @@ class MovinylApp(App):
         ("p", "pages", "Pages"),
         ("a", "planche", "Planche"),
         ("s", "setup", "Setup"),
+        ("o", "toggle_overwrite", "Re-process"),
         ("r", "refresh", "Refresh"),
         ("c", "cancel", "Cancel"),
         ("q", "quit", "Quit"),
@@ -123,6 +124,7 @@ class MovinylApp(App):
         self.reporter = TextualReporter(self)
         self._cancel = threading.Event()
         self._busy = False
+        self._overwrite = False
 
     # -- composition --------------------------------------------------------
     def compose(self) -> ComposeResult:
@@ -149,11 +151,12 @@ class MovinylApp(App):
 
     def on_mount(self) -> None:
         self.title = "Movinyl"
-        self.sub_title = f"{pf.system()} · {pf.cpu_count()} cores · {engine.DEFAULT_FRAME_COUNT} frames"
+        self._update_subtitle()
         self.query_one("#bars").border_title = "Progress"
         self.query_one("#log").border_title = "Log"
         self.refresh_lists()
         self.write_log("Welcome. Put videos in PROCESSING_ZONE, then press [b]d[/] to generate disks.")
+        self.write_log("[green]✓[/] = already processed (skipped). Press [b]o[/] to re-process them.")
         if pf.disk_binary() is None:
             self.write_log("[yellow]disk/page not built yet — press 's' (Setup) first.[/]")
 
@@ -195,15 +198,26 @@ class MovinylApp(App):
     def refresh_lists(self) -> None:
         videos = engine.discover_videos(INPUT_DIR) if INPUT_DIR.is_dir() else []
         disks = engine.discover_disks(PAGE_DIR) if PAGE_DIR.is_dir() else []
-        self.query_one("#videos", Static).update(
-            self._panel("Videos · PROCESSING_ZONE", videos))
-        self.query_one("#disks", Static).update(
-            self._panel("Disks · PAGE_ZONE", disks))
+        films = history.all_films()
+        disk_done = {f.name for f in films if f.disk_at}
+        page_done = {f.name for f in films if f.page_at}
+        self.query_one("#videos", Static).update(self._panel(
+            "Videos · PROCESSING_ZONE", videos,
+            lambda p: engine.sanitize_name(p.stem) in disk_done))
+        self.query_one("#disks", Static).update(self._panel(
+            "Disks · PAGE_ZONE", disks, lambda p: p.stem in page_done))
+
+    def _update_subtitle(self) -> None:
+        mode = " · re-process ON" if self._overwrite else ""
+        self.sub_title = (f"{pf.system()} · {pf.cpu_count()} cores · "
+                          f"{engine.DEFAULT_FRAME_COUNT} frames{mode}")
 
     @staticmethod
-    def _panel(title: str, items) -> str:
+    def _panel(title: str, items, done) -> str:
         if items:
-            body = "\n".join(f"[dim]·[/] {p.name}" for p in items[:8])
+            body = "\n".join(
+                f"[green]✓[/] {p.name}" if done(p) else f"[dim]·[/] {p.name}"
+                for p in items[:8])
         else:
             body = "[dim](empty)[/]"
         more = f"\n[dim]… +{len(items) - 8} more[/]" if len(items) > 8 else ""
@@ -226,11 +240,12 @@ class MovinylApp(App):
     # -- actions ------------------------------------------------------------
     def action_disks(self) -> None:
         n = engine.DEFAULT_FRAME_COUNT
+        overwrite = self._overwrite
 
         def job():
             try:
                 outs = engine.run_disk_batch(INPUT_DIR, n=n, reporter=self.reporter,
-                                             cancel=self._cancel)
+                                             cancel=self._cancel, overwrite=overwrite)
                 msg = f"[green]Done: {len(outs)} disk(s).[/]"
             except Exception as exc:  # noqa: BLE001
                 msg = f"[red]disk error: {exc}[/]"
@@ -240,10 +255,12 @@ class MovinylApp(App):
         self._start(job)
 
     def action_pages(self) -> None:
+        overwrite = self._overwrite
+
         def job():
             try:
                 outs = engine.run_page_batch(PAGE_DIR, reporter=self.reporter,
-                                             cancel=self._cancel)
+                                             cancel=self._cancel, overwrite=overwrite)
                 msg = f"[green]Done: {len(outs)} page(s).[/]"
             except Exception as exc:  # noqa: BLE001
                 msg = f"[red]page error: {exc}[/]"
@@ -279,6 +296,14 @@ class MovinylApp(App):
 
         self.write_log("Building C++ renderers …")
         self._start(job)
+
+    def action_toggle_overwrite(self) -> None:
+        self._overwrite = not self._overwrite
+        self._update_subtitle()
+        if self._overwrite:
+            self.write_log("Re-process: [yellow]ON[/] - done films will be rendered again")
+        else:
+            self.write_log("Re-process: OFF - done films are skipped")
 
     def action_refresh(self) -> None:
         self.refresh_lists()
