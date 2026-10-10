@@ -141,12 +141,35 @@ already processed are marked **✓** and skipped unless re-processing is on.
 
 ### The desktop window
 
-Prefer a regular window? The PyQt6 GUI does the same, and lets you pick the
-video and disk folders with a file browser:
+Prefer a regular window? The PyQt6 GUI does the same, with a few extras:
 
 ```sh
 python3 -m movinyl gui
 ```
+
+- **Files** — the videos and disks of your two folders (pick them with
+  *Browse…*, or drop a folder on them). Right-click a selection to render just
+  those videos or compose just those pages (again, if they were done). The
+  lists refresh by themselves.
+- **Library** — every film of the database, as a sortable table or a
+  **gallery of disks**, with the selected film's disk, facts, barcode and files
+  alongside. Filter by title, director, years or state, then act on the
+  selection: pages, contact sheet, barcodes, TMDB match, forget.
+- **Pages right after disks** chains both stages: one click from the videos to
+  the finished pages, without moving the disks by hand.
+- The progress bars show the **time left** and the window title the overall
+  percentage. A desktop notification tells you when a long job is done, or
+  when a film waits for you to pick its TMDB match.
+- Folders, options and layout are remembered between sessions (an INI file in
+  your user config folder, e.g. `%APPDATA%\Movinyl` on Windows).
+
+| Shortcut | Action |
+|:--------:|--------|
+| **Ctrl+D** · **Ctrl+P** · **Ctrl+L** | Disks · Pages · Planche |
+| **F5** | Refresh the folders and the library |
+| **Ctrl+F** | Search the library |
+| **Ctrl+1** · **Ctrl+2** | Files · Library tab |
+| **Enter** · **Del** | Open · forget the selected film (library) |
 
 PyQt6 is optional: the setup scripts install it (`requirements-gui.txt`), or run
 `pip install -r requirements-gui.txt` yourself. It is left out of the Docker image.
@@ -238,8 +261,9 @@ python -m pytest tests
 ```
 
 The tests cover the database (films, TMDB ids, mean colors, migration), the
-redraw and the skip / re-process rules. They don't need
-ffmpeg, the C++ renderers or network access.
+redraw, the skip / re-process rules and the desktop window (run offscreen,
+skipped without PyQt6). They don't need ffmpeg, the C++ renderers or network
+access.
 
 ---
 
