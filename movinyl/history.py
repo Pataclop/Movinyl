@@ -175,6 +175,55 @@ def all_films() -> List[Film]:
     return [Film(*r) for r in rows]
 
 
+# Processing-state filters for :func:`search` (key -> SQL condition).
+STATUS_FILTERS = {
+    "all": "1",
+    "disk": "disk_at IS NOT NULL",
+    "page": "page_at IS NOT NULL",
+    "no_page": "disk_at IS NOT NULL AND page_at IS NULL",
+    "colors": "EXISTS (SELECT 1 FROM mean_color WHERE film_id = films.id)",
+    "no_tmdb": "tmdb_id IS NULL",
+}
+
+
+def search(text: str = "", director: Optional[str] = None,
+           year_from: Optional[int] = None, year_to: Optional[int] = None,
+           status: str = "all") -> List[Film]:
+    """Films matching every given filter, ordered by title.
+
+    ``text`` is a case-insensitive substring of the name, title, original title
+    or director. Films with an unknown year are dropped by any year bound.
+    """
+    where, args = [STATUS_FILTERS[status]], []
+    if text.strip():
+        where.append("(name LIKE ? OR title LIKE ? OR original_title LIKE ?"
+                     " OR director LIKE ?)")
+        args += [f"%{text.strip()}%"] * 4
+    if director:
+        where.append("director = ?")
+        args.append(director)
+    if year_from is not None:
+        where.append("year >= ?")
+        args.append(year_from)
+    if year_to is not None:
+        where.append("year <= ?")
+        args.append(year_to)
+    with closing(_connect()) as conn:
+        rows = conn.execute(
+            f"{_SELECT} WHERE {' AND '.join(where)}"
+            " ORDER BY COALESCE(title, name) COLLATE NOCASE", args).fetchall()
+    return [Film(*r) for r in rows]
+
+
+def directors() -> List[str]:
+    """Every known director, alphabetically."""
+    with closing(_connect()) as conn:
+        rows = conn.execute(
+            "SELECT DISTINCT director FROM films WHERE director IS NOT NULL"
+            " ORDER BY director COLLATE NOCASE").fetchall()
+    return [r[0] for r in rows]
+
+
 def disk_done(name: str) -> bool:
     film = get(name)
     return film is not None and film.disk_at is not None

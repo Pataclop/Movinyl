@@ -32,7 +32,11 @@ DEFAULT_FRAME_COUNT = 2000
 # Each frame only colors a single 1px-wide ring, so full-resolution frames are
 # wasted decode + disk I/O. We cap the frame height (never upscaling) with a
 # fixed, deterministic scaler so output stays reproducible across machines.
-DEFAULT_MAX_HEIGHT = 1080
+FRAME_HEIGHT = 1080
+
+# In mean-color mode a frame is reduced to its average color, so a tiny
+# area-averaged frame is enough (and much cheaper to encode and decode).
+MEAN_FRAME_WIDTH = 64
 
 
 class MovinylError(RuntimeError):
@@ -144,17 +148,19 @@ def extract_frames(
     key: str,
     cancel: Optional[threading.Event] = None,
     low_priority: bool = True,
-    max_height: int = DEFAULT_MAX_HEIGHT,
+    mean_colors: bool = False,
 ) -> None:
     """Extract ``n`` evenly spaced frames from ``video`` into ``images_dir``.
 
     A single ffmpeg pass (``-vf fps=n/duration``) replaces the historical ~2000
     separate ffmpeg invocations that each re-opened and re-seeked the whole file.
 
-    Frames are capped to ``max_height`` pixels tall (never upscaled) because each
-    frame only paints a 1px ring: keeping full 1080p/4K detail just wastes encode,
-    disk I/O and the renderer's re-decode. ``flags=lanczos`` is fixed so the
-    downscale stays bit-identical across machines.
+    Frames are capped to ``FRAME_HEIGHT`` pixels tall (never upscaled) because
+    each frame only paints a 1px ring: keeping full 1080p/4K detail just wastes
+    encode, disk I/O and the renderer's re-decode. ``flags=lanczos`` is fixed so
+    the downscale stays bit-identical across machines. With ``mean_colors`` the
+    frames are area-averaged down to ``MEAN_FRAME_WIDTH`` pixels wide instead,
+    since only their average color is kept.
     """
     ffmpeg = _require_tool("ffmpeg")
     duration = ffprobe_duration(video)
@@ -167,9 +173,12 @@ def extract_frames(
 
     fps = n / duration
     vf = f"fps={fps:.10f}"
-    if max_height and max_height > 0:
+    if mean_colors:
+        # area scaling averages whole pixel blocks, so the mean color is kept.
+        vf += f",scale={MEAN_FRAME_WIDTH}:-2:flags=area"
+    else:
         # -2 keeps the aspect ratio with an even width; min(h,ih) never upscales.
-        vf += f",scale=-2:'min({int(max_height)},ih)':flags=lanczos"
+        vf += f",scale=-2:'min({FRAME_HEIGHT},ih)':flags=lanczos"
     cmd = [
         ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
         "-i", str(video),
@@ -283,11 +292,15 @@ def generate_disk_for_video(
     overwrite: bool = False,
     keep_frames: bool = False,
     low_priority: bool = True,
-    max_height: int = DEFAULT_MAX_HEIGHT,
+    mean_colors: bool = False,
     tmdb_key: Optional[str] = None,
 ) -> Optional[Path]:
     """Full per-video pipeline: extract -> normalize -> mean colors -> render
-    -> place PNG, then record the film (TMDB metadata + colors) in the database."""
+    -> place PNG, then record the film (TMDB metadata + colors) in the database.
+
+    With ``mean_colors`` every ring is painted with its frame's average color
+    instead of the frame itself.
+    """
     name = sanitize_name(video.stem)
     output = output_dir / f"{name}.png"
     if not overwrite and history.video_changed(name, video):
@@ -312,15 +325,18 @@ def generate_disk_for_video(
 
     try:
         extract_frames(video, n, images_dir, reporter, "extract", cancel,
-                       low_priority, max_height)
+                       low_priority, mean_colors)
         if cancel is not None and cancel.is_set():
             return None
         normalize_frame_count(images_dir, n)
         colors = _mean_colors(images_dir, n)
+        if mean_colors:
+            _flatten_frames(images_dir, colors)
         save = render_disk(work_dir, n, reporter, "disk", cancel, low_priority)
         output.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(save), str(output))
-        history.record_disk(name, video, n, max_height, output, colors=colors)
+        history.record_disk(name, video, n, None if mean_colors else FRAME_HEIGHT,
+                            output, colors=colors)
         _record_info(name, tmdb_key, reporter)
         reporter.log(f"disk ready: {output.name}")
         return output
@@ -336,13 +352,18 @@ def _mean_colors(images_dir: Path, n: int) -> list:
     return frame_mean_colors(images_dir, n)
 
 
+def _flatten_frames(images_dir: Path, colors: list) -> None:
+    from .palette import write_flat_frames  # local import: Pillow
+    write_flat_frames(images_dir, colors)
+
+
 def _record_info(name: str, tmdb_key: Optional[str], reporter: Reporter) -> None:
     """Store the film's TMDB metadata and id, unless it is already known."""
     from . import tmdb
     film = history.get(name)
     if film is not None and film.tmdb_id is not None:
         return
-    info = tmdb.lookup_name(name, tmdb_key)
+    info = tmdb.lookup_name(name, tmdb_key) or reporter.resolve_film(name)
     if info is None:
         reporter.log(f"[warn] {name}: not found on TMDB (no metadata stored)")
     else:
@@ -357,7 +378,7 @@ def run_disk_batch(
     overwrite: bool = False,
     keep_frames: bool = False,
     low_priority: bool = True,
-    max_height: int = DEFAULT_MAX_HEIGHT,
+    mean_colors: bool = False,
     tmdb_key: Optional[str] = None,
 ) -> List[Path]:
     """Render disks for every video in ``input_dir`` (sequentially)."""
@@ -374,7 +395,7 @@ def run_disk_batch(
         try:
             result = generate_disk_for_video(
                 video, n, input_dir, reporter, cancel,
-                overwrite, keep_frames, low_priority, max_height, tmdb_key,
+                overwrite, keep_frames, low_priority, mean_colors, tmdb_key,
             )
             if result is not None:
                 outputs.append(result)
@@ -408,7 +429,8 @@ def generate_page_for_disk(
     work_dir = Path(tempfile.mkdtemp(prefix="movinyl_page_"))
     try:
         shutil.copyfile(disk_png, work_dir / f"{name}.png")
-        infos.generate_assets(name, disk_png, work_dir, tmdb_key=tmdb_key)
+        infos.generate_assets(name, disk_png, work_dir, tmdb_key=tmdb_key,
+                              resolve=reporter.resolve_film)
         if cancel is not None and cancel.is_set():
             raise MovinylError("Cancelled")
 
@@ -460,7 +482,21 @@ def run_page_batch(
         disks = [d for d in disks if d not in done]
         if not disks:
             return []
+    return run_pages(disks, output_dir, jobs, reporter, cancel, tmdb_key,
+                     low_priority)
 
+
+def run_pages(
+    disks: List[Path],
+    output_dir: Path,
+    jobs: Optional[int] = None,
+    reporter: Optional[Reporter] = None,
+    cancel: Optional[threading.Event] = None,
+    tmdb_key: Optional[str] = None,
+    low_priority: bool = True,
+) -> List[Path]:
+    """Compose a page for each of ``disks`` (no skipping), bounded pool."""
+    reporter = reporter or Reporter()
     jobs = max(1, jobs or pf.default_jobs())
     reporter.task("overall", f"Pages (x{jobs})", total=len(disks))
     outputs: List[Path] = []

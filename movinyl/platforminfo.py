@@ -25,6 +25,51 @@ else:
     PROJECT_ROOT = Path(__file__).resolve().parent.parent
     RESOURCE_ROOT = PROJECT_ROOT
 
+
+
+def _refresh_windows_env() -> None:
+    """Pick up PATH / OpenCV_DIR changes made after this process's parent started.
+
+    Windows only hands new environment variables to *new* top-level programs, so
+    a terminal (or VS Code) opened before installing cmake/ffmpeg would not see
+    them. Merge the current user + machine values from the registry instead.
+    """
+    if not sys.platform.startswith("win") or FROZEN:
+        return
+    try:
+        import winreg
+    except ImportError:  # pragma: no cover
+        return
+
+    def read(root, key, name):
+        try:
+            with winreg.OpenKey(root, key) as k:
+                return os.path.expandvars(winreg.QueryValueEx(k, name)[0])
+        except OSError:
+            return None
+
+    hives = ((winreg.HKEY_CURRENT_USER, r"Environment"),
+             (winreg.HKEY_LOCAL_MACHINE,
+              r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"))
+    current = os.environ.get("PATH", "")
+    known = {p.rstrip("\\").lower() for p in current.split(os.pathsep) if p}
+    extra = []
+    for root, key in hives:
+        for entry in (read(root, key, "Path") or "").split(os.pathsep):
+            if entry and entry.rstrip("\\").lower() not in known:
+                known.add(entry.rstrip("\\").lower())
+                extra.append(entry)
+    if extra:
+        os.environ["PATH"] = os.pathsep.join([current, *extra])
+    for name in ("OpenCV_DIR", "VCPKG_ROOT"):
+        if name not in os.environ:
+            value = read(*hives[0], name) or read(*hives[1], name)
+            if value:
+                os.environ[name] = value
+
+
+_refresh_windows_env()
+
 BUILD_DIR = PROJECT_ROOT / "build"
 # Bundled executables (disk, page, ffmpeg, ffprobe + DLLs) in the .exe build.
 BUNDLED_BIN = PROJECT_ROOT / "bin"

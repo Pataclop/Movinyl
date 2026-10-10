@@ -186,7 +186,7 @@ Tuning is done via command-line flags (not env vars):
 | Flag | Command | Default | Description |
 |------|---------|:-------:|-------------|
 | `--n` | `disk` | `2000` | Frames per video (= rings on the disk). |
-| `--max-height` | `disk` | `1080` | Cap frame resolution. Sources are **never upscaled**; each frame only paints a 1px ring, so this trades wasted decode/I-O for speed. Use `0` to keep full resolution. |
+| `--mean-colors` | `disk` | off | Paint each ring with its frame's **average color** instead of the frame itself (smoother disk). |
 | `--overwrite` | `disk`, `page` | off | Re-render films already processed (existing file or recorded in the history). |
 | `--keep-frames` | `disk` | off | Keep the extracted frames instead of cleaning them up. |
 | `--jobs` | `page` | CPU count | Number of parallel page workers. |

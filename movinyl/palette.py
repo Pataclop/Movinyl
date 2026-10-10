@@ -77,3 +77,20 @@ def frame_mean_colors(images_dir: Path, n: int, jobs: int = 0) -> List[RGB]:
     paths = [images_dir / f"{i}.jpg" for i in range(1, n + 1)]
     with ThreadPoolExecutor(max_workers=jobs or None) as pool:
         return list(pool.map(frame_mean_color, paths))
+
+
+def _write_flat_frame(item: Tuple[Path, RGB]) -> None:
+    path, rgb = item
+    # A uniform block is pure DC in JPEG: at quality 100 with no chroma
+    # subsampling it decodes back to the same color (to within rounding).
+    Image.new("RGB", (16, 16), rgb).save(path, "JPEG", quality=100, subsampling=0)
+
+
+def write_flat_frames(images_dir: Path, colors: List[RGB], jobs: int = 0) -> None:
+    """Replace frames ``1.jpg .. n.jpg`` with solid blocks of their mean color.
+
+    The disk renderer then paints each ring in a single color, unchanged.
+    """
+    items = [(images_dir / f"{i}.jpg", rgb) for i, rgb in enumerate(colors, 1)]
+    with ThreadPoolExecutor(max_workers=jobs or None) as pool:
+        list(pool.map(_write_flat_frame, items))

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import textwrap
 from pathlib import Path
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -71,13 +71,23 @@ def _draw_palette(colors: List[RGB], width: int, out_path: Path) -> None:
     img.save(out_path)
 
 
-def film_info(name: str, tmdb_key: Optional[str] = None) -> history.MovieInfo:
-    """Metadata for ``name``: from the database, else TMDB (then stored)."""
+def film_info(
+    name: str,
+    tmdb_key: Optional[str] = None,
+    resolve: Optional[Callable[[str], Optional[history.MovieInfo]]] = None,
+) -> history.MovieInfo:
+    """Metadata for ``name``: from the database, else TMDB (then stored).
+
+    ``resolve`` is asked for the film when the automatic lookup finds nothing
+    (the GUI opens its TMDB search window there).
+    """
     film = history.get(name)
     if film is not None and film.tmdb_id is not None:
         return history.MovieInfo(film.tmdb_id, film.title, film.original_title,
                                  film.year, film.director, film.runtime)
     info = tmdb.lookup_name(name, tmdb_key)
+    if info is None and resolve is not None:
+        info = resolve(name)
     if info is not None:
         history.record_info(name, info)
         return info
@@ -90,10 +100,11 @@ def generate_assets(
     disk_png: Path,
     out_dir: Path,
     tmdb_key: Optional[str] = None,
+    resolve: Optional[Callable[[str], Optional[history.MovieInfo]]] = None,
 ) -> None:
     """Write title/year/director/duration/palette PNGs into ``out_dir``."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    info = film_info(name, tmdb_key)
+    info = film_info(name, tmdb_key, resolve)
     display_title = info.original_title or info.title or name
     year = str(info.year) if info.year else ""
     director = info.director or ""

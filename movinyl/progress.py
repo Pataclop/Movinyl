@@ -35,6 +35,11 @@ class Reporter:
     def log(self, message: str) -> None:
         """Emit a human-readable log line."""
 
+    def resolve_film(self, name: str):
+        """The automatic TMDB lookup found nothing for ``name``: let the user
+        pick the film. Returns a ``history.MovieInfo`` or None (skip)."""
+        return None
+
 
 class RichReporter(Reporter):
     """Renders progress with ``rich.progress`` (used by the command line)."""

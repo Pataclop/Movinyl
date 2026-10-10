@@ -117,7 +117,7 @@ def cmd_disk(args: argparse.Namespace) -> int:
                 Path(args.dir), n=args.n, reporter=reporter,
                 overwrite=args.overwrite, keep_frames=args.keep_frames,
                 low_priority=not args.no_low_priority,
-                max_height=args.max_height, tmdb_key=args.tmdb_key,
+                mean_colors=args.mean_colors, tmdb_key=args.tmdb_key,
             )
         print(f"\nGenerated {len(outputs)} disk(s) in {args.dir}")
         return 0
@@ -246,9 +246,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("dir", nargs="?", default=str(DEFAULT_INPUT))
     sp.add_argument("--n", type=int, default=engine.DEFAULT_FRAME_COUNT,
                     help="Frames per video (default: 2000).")
-    sp.add_argument("--max-height", type=int, default=engine.DEFAULT_MAX_HEIGHT,
-                    help="Cap frame height in pixels; sources are never upscaled "
-                         "(default: 1080). Use 0 to keep full resolution.")
+    sp.add_argument("--mean-colors", action="store_true",
+                    help="Paint each ring with its frame's average color instead "
+                         "of the frame itself (smoother disk).")
     sp.add_argument("--overwrite", action="store_true",
                     help="Re-render disks that exist or are recorded in the history "
                          "(a changed video file is always re-rendered).")
