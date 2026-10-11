@@ -136,9 +136,108 @@ def _stream_process(
     return proc.wait()
 
 
+class _AnyOf:
+    """Set as soon as one of ``events`` is (an Event look-alike)."""
+
+    def __init__(self, *events: Optional[threading.Event]) -> None:
+        self._events = [e for e in events if e is not None]
+
+    def is_set(self) -> bool:
+        return any(e.is_set() for e in self._events)
+
+
+def _run_ffmpeg_parts(
+    cmds: List[List[str]],
+    workers: int,
+    on_frames: Callable[[int], None],
+    cancel: Optional[threading.Event],
+    low_priority: bool,
+) -> Optional[str]:
+    """Run ffmpeg commands (each with ``-progress pipe:1``), ``workers`` at a
+    time and in order, reporting the frames written by all of them together.
+
+    Returns the error output of the first part that failed (the other parts
+    are then stopped), or None.
+    """
+    counts = [0] * len(cmds)
+    pending = list(range(len(cmds)))
+    lock = threading.Lock()
+    errors: List[str] = []
+    failed = threading.Event()
+    stop = _AnyOf(cancel, failed)
+
+    def run_part(i: int) -> None:
+        def handle(line: str) -> None:
+            if line.startswith("frame="):
+                try:
+                    value = int(line[6:])
+                except ValueError:
+                    return
+                with lock:
+                    counts[i] = value
+                    done = sum(counts)
+                on_frames(done)
+
+        # stderr goes to a file: a chatty decoder can never fill a pipe and
+        # stall ffmpeg while we read its progress.
+        with tempfile.TemporaryFile() as log:
+            proc = subprocess.Popen(
+                cmds[i], stdout=subprocess.PIPE, stderr=log, text=True,
+                **_child_kwargs(low_priority),
+            )
+            rc = _stream_process(proc, handle, stop)
+            if rc != 0 and not stop.is_set():
+                log.seek(0)
+                errors.append(log.read().decode("utf-8", "replace").strip()
+                              or f"exit code {rc}")
+                failed.set()
+
+    def worker() -> None:
+        try:
+            while not stop.is_set():
+                with lock:
+                    if not pending:
+                        return
+                    i = pending.pop(0)
+                run_part(i)
+        except BaseException:
+            failed.set()
+            raise
+
+    if workers <= 1:
+        worker()
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            for fut in [pool.submit(worker) for _ in range(workers)]:
+                fut.result()
+    return errors[0] if errors else None
+
+
 # ---------------------------------------------------------------------------
-# Stage 1 - frame extraction (single ffmpeg pass)
+# Stage 1 - frame extraction (ffmpeg; long films decoded in parallel)
 # ---------------------------------------------------------------------------
+
+# One ffmpeg process decodes a film on ~6 hardware threads at best, so long
+# films are cut into consecutive chunks decoded side by side. Measured on a
+# 1h52 HEVC 1080p film with a 12-core/24-thread CPU: 230 s in one pass, x1.7
+# with 2 decoders, x2.0 with 3, x2.2 with 4 (~0.6 GB of RAM each).
+MAX_EXTRACT_WORKERS = 4
+MIN_SPLIT_DURATION = 600.0  # seconds: shorter videos are quick in one pass
+# Containers with steady timestamps. MPEG-TS/PS timestamps may jump, so those
+# files are always read in one pass.
+_SPLITTABLE = {"mkv", "mp4", "mov", "m4v", "webm"}
+
+
+def extraction_workers(video: Path, duration: float, n: int) -> int:
+    """How many ffmpeg processes share the extraction of ``video``."""
+    if (video.suffix.lower().lstrip(".") not in _SPLITTABLE
+            or duration < MIN_SPLIT_DURATION
+            # A chunk seeks to the start of its first sample interval; the
+            # first half of that interval must hold frames (>= 10 fps video).
+            or duration / n < 0.2):
+        return 1
+    return max(1, min(MAX_EXTRACT_WORKERS, pf.cpu_count() // 6, n // 2))
+
 
 def extract_frames(
     video: Path,
@@ -149,11 +248,19 @@ def extract_frames(
     cancel: Optional[threading.Event] = None,
     low_priority: bool = True,
     mean_colors: bool = False,
+    workers: Optional[int] = None,
 ) -> None:
     """Extract ``n`` evenly spaced frames from ``video`` into ``images_dir``.
 
     A single ffmpeg pass (``-vf fps=n/duration``) replaces the historical ~2000
     separate ffmpeg invocations that each re-opened and re-seeked the whole file.
+    Long films are cut into consecutive chunks that ``workers`` ffmpeg
+    processes decode side by side (default: :func:`extraction_workers`).
+
+    Output frame ``j`` is the last frame shown before ``(j + 0.5) * duration / n``.
+    A chunk seeks to the start of its first sample interval and keeps the
+    film's own timeline (``-copyts -start_at_zero``), so chunking never changes
+    which frames are kept: the disk is the same whatever the core count.
 
     Frames are capped to ``FRAME_HEIGHT`` pixels tall (never upscaled) because
     each frame only paints a 1px ring: keeping full 1080p/4K detail just wastes
@@ -179,35 +286,39 @@ def extract_frames(
     else:
         # -2 keeps the aspect ratio with an even width; min(h,ih) never upscales.
         vf += f",scale=-2:'min({FRAME_HEIGHT},ih)':flags=lanczos"
-    cmd = [
-        ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
-        "-i", str(video),
-        "-vf", vf,
-        "-qscale:v", "2",
-        "-frames:v", str(n),
-        "-progress", "pipe:1", "-nostats",
-        str(images_dir / "%d.jpg"),
-    ]
-    reporter.task(key, f"Extracting frames · {video.name}", total=n)
 
-    proc = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-        **_child_kwargs(low_priority),
-    )
+    workers = max(1, min(workers or extraction_workers(video, duration, n), n))
+    # A decoder done early takes the next chunk: a few chunks per decoder even
+    # out the uneven decoding cost of the film's scenes.
+    chunks = 1 if workers == 1 else min(n, 4 * workers)
+    bounds = [n * i // chunks for i in range(chunks + 1)]  # frames [j0, j1)
+    cmds = []
+    for j0, j1 in zip(bounds, bounds[1:]):
+        timeline = []
+        if chunks > 1:
+            timeline = ["-copyts", "-start_at_zero"]
+            if j0:
+                timeline += ["-ss", f"{j0 / fps:.6f}"]
+        cmds.append([
+            ffmpeg, "-hide_banner", "-loglevel", "error", "-y", *timeline,
+            "-i", str(video),
+            "-vf", vf,
+            "-qscale:v", "2",
+            "-frames:v", str(j1 - j0),
+            "-start_number", str(j0 + 1),
+            "-progress", "pipe:1", "-nostats",
+            str(images_dir / "%d.jpg"),
+        ])
+    label = f"Extracting frames ×{workers}" if workers > 1 else "Extracting frames"
+    reporter.task(key, f"{label} · {video.name}", total=n)
 
-    def handle(line: str) -> None:
-        if line.startswith("frame="):
-            try:
-                reporter.update(key, completed=min(n, int(line[6:])))
-            except ValueError:
-                pass
-
-    rc = _stream_process(proc, handle, cancel)
-    stderr = proc.stderr.read() if proc.stderr else ""
+    error = _run_ffmpeg_parts(
+        cmds, workers, lambda done: reporter.update(key, completed=min(n, done)),
+        cancel, low_priority)
     if cancel is not None and cancel.is_set():
         return
-    if rc != 0:
-        raise MovinylError(f"ffmpeg failed on {video.name}:\n{stderr.strip()}")
+    if error is not None:
+        raise MovinylError(f"ffmpeg failed on {video.name}:\n{error}")
     reporter.update(key, completed=n)
 
 

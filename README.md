@@ -66,7 +66,7 @@ same input yields a bit-identical disk on every machine.
 
 | Stage | Tool | What happens |
 |-------|------|--------------|
-| **Extract** | `ffmpeg` | Pulls ~2000 evenly-spaced frames in a single pass, capped to 1080p (each frame only colors a 1px ring, so full 4K detail is wasted I/O). |
+| **Extract** | `ffmpeg` | Pulls ~2000 evenly-spaced frames, capped to 1080p (each frame only colors a 1px ring, so full 4K detail is wasted I/O). Long films are decoded by up to 4 ffmpeg processes side by side — about twice as fast on a 12-core CPU, with exactly the same frames. |
 | **Disk** | C++ + OpenCV | Each frame → one concentric ring, filled in parallel with integer-only geometry for reproducible output. |
 | **Palette** | Pillow | Extracts the dominant colors straight from the finished disk. |
 | **Info** | TMDB | Looks up the official title, director and runtime (optional; degrades gracefully offline). |
@@ -262,8 +262,9 @@ python -m pytest tests
 
 The tests cover the database (films, TMDB ids, mean colors, migration), the
 redraw, the skip / re-process rules and the desktop window (run offscreen,
-skipped without PyQt6). They don't need ffmpeg, the C++ renderers or network
-access.
+skipped without PyQt6). They don't need the C++ renderers or network access;
+the check that parallel extraction keeps exactly the same frames uses ffmpeg
+and is skipped without it.
 
 ---
 
